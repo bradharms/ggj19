@@ -1,0 +1,9 @@
+export const CAMERA_Y = 7;
+export const HOUSE_D = 6;
+export const HOUSE_H = 6;
+export const HOUSE_W = 6;
+export const NETFIELD_DIAMETER_BOTTOM = 24;
+export const NETFIELD_DIAMETER_TOP = 0;
+export const NETFIELD_HEIGHT = 0.0001;
+export const NETFIELD_SUBDIVISIONS = 12;
+export const NETFIELD_TESSELLATION = 12;

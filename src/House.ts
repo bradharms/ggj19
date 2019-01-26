@@ -14,11 +14,6 @@ export default class House {
     }
 
     setupGeometry(width: number, height: number, depth: number) {
-        this.mat = new StandardMaterial(
-            'houseMat',
-            this.app.scene
-        );
-        this.mat.emissiveColor = new Color3(0, 1, 0);
         this.mesh = MeshBuilder.CreateBox(
             'house', {
                 width,
@@ -27,9 +22,8 @@ export default class House {
             },
             this.app.scene
         );
+        this.mesh.material = this.app.mats[0];
         this.mesh.position.y = height / 2;
-        this.mesh.material = this.mat;
-        this.mesh.material.wireframe = true;
     }
 
     update() {

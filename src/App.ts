@@ -8,18 +8,18 @@ import {
     Engine,
     Light,
     Color3,
-    Color4
+    Color4,
+    StandardMaterial
 } from 'babylonjs';
 
+import * as C from 'C';
 import House from 'House';
 import Player from 'Player';
+import NetField from 'NetField';
 
 // Base unit is meters
 
-const HOUSE_W = 6;
-const HOUSE_H = 6;
-const HOUSE_D = 6;
-const CAMERA_Y = 7;
+
 
 export default class App {
     canvas: HTMLCanvasElement;
@@ -27,9 +27,11 @@ export default class App {
     camera: FreeCamera;
     scene: Scene;
     light: Light;
+    mats: StandardMaterial[] = [];
 
     player: Player;
     house: House;
+    netfield: NetField;
 
     constructor() {
         window.addEventListener('load', this.onWindowLoad);
@@ -39,6 +41,7 @@ export default class App {
 
     onWindowLoad = () => {
         this.setupRenderer();
+        this.setupMaterials();
         this.setupScene();
 
         this.engine.runRenderLoop(() => {
@@ -69,18 +72,38 @@ export default class App {
         );
     }
 
+    setupMaterials() {
+        this.mats[0] = new StandardMaterial(
+            'houseMat',
+            this.scene
+        );
+        this.mats[0].emissiveColor = new Color3(0, 1, 0);
+        this.mats[0].wireframe = true;
+
+        this.mats[1] = new StandardMaterial(
+            'netfieldMat',
+            this.scene
+        );
+        this.mats[1].emissiveColor = new Color3(1, 0, 0);
+        this.mats[1].wireframe = true;
+    }
+
     setupScene() {
         this.player = new Player(this);
+        this.netfield = new NetField(this);
         this.house = new House(
             this,
-            [HOUSE_W,
-            HOUSE_H,
-            HOUSE_D]
+            [
+                C.HOUSE_W,
+                C.HOUSE_H,
+                C.HOUSE_D
+            ]
         );
     }
 
     update() {
         this.player.update();
+        this.netfield.update();
         this.house.update();
     }
 }
