@@ -16,11 +16,16 @@ module.exports =  {
             {
                 test: /.*\.(t|j)s$/,
                 use: ['ts-loader']
+            },
+            {
+                test: /.*\.css$/,
+                use: ['style-loader', 'css-loader']
             }
         ],
     },
     resolve: {
-        modules: ['./src', './node_modules']
+        modules: ['./src', './node_modules'],
+        extensions: ['.js', '.ts']
     },
     devServer: {
         hot: true,

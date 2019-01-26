@@ -24,7 +24,7 @@
         "sourceMap": true,
         "noEmit": false,
         "moduleResolution": "node",
-        "skipLibCheck": true
+        "skipLibCheck": true,
     },
     "include": [
         "./src/**/*.ts",
