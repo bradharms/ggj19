@@ -22,15 +22,15 @@
             "./node_modules/@types"
         ],
         "sourceMap": true,
-        "noEmit": true,
+        "noEmit": false,
         "moduleResolution": "node",
         "skipLibCheck": true
     },
     "include": [
-        "./**/*.ts",
-        "./**/*.js"
+        "./src/**/*.ts",
+        "./src/**/*.js"
     ],
     "exclude": [
-        "./node_modules/*/**"
+        "./node_modules/**/*"
     ]
 }
