@@ -1,2 +1,5 @@
-# ggj19
-Game Jam 2019 Project
+# GGJ 2019 Project
+
+## TODO (order of priority):
+
+- *Map* - Center area / tower
