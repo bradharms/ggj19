@@ -18,8 +18,8 @@
   },
   "homepage": "https://github.com/lazy-hospitality/ggj19#readme",
   "devDependencies": {
+    "@types/babylonjs": "^2.4.1",
     "@types/node": "^10.12.18",
-    "@types/three": "^0.93.18",
     "@types/webpack": "^4.4.24",
     "@types/webpack-dev-server": "^3.1.1",
     "css-loader": "^2.1.0",
@@ -31,6 +31,6 @@
     "webpack-dev-server": "^3.1.14"
   },
   "dependencies": {
-    "three": "^0.100.0"
+    "babylonjs": "^3.3.0"
   }
 }

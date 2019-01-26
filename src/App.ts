@@ -1,8 +1,15 @@
 import {
-    PerspectiveCamera,
     Scene,
-    WebGLRenderer,
-} from 'three';
+    FreeCameraMouseInput,
+    FreeCamera,
+    Vector3,
+    MeshBuilder,
+    HemisphericLight,
+    Engine,
+    Light,
+    Color3,
+    Color4
+} from 'babylonjs';
 
 import House from 'House';
 import Player from 'Player';
@@ -15,36 +22,51 @@ const HOUSE_D = 6;
 const CAMERA_Y = 7;
 
 export default class App {
-    camera: PerspectiveCamera;
+    canvas: HTMLCanvasElement;
+    engine: Engine;
+    camera: FreeCamera;
     scene: Scene;
-    renderer: WebGLRenderer;
+    light: Light;
 
     player: Player;
     house: House;
 
     constructor() {
-        this.setupRenderer();
-        this.setupScene();
         window.addEventListener('load', this.onWindowLoad);
         window.addEventListener('resize', this.onWindowResize);
-        this.animate();
+    }
+
+
+    onWindowLoad = () => {
+        this.setupRenderer();
+        this.setupScene();
+
+        this.engine.runRenderLoop(() => {
+            this.update();
+            this.scene.render();
+        });
+    }
+
+    onWindowResize = () => {
+        this.engine.resize();
     }
 
     setupRenderer() {
-        this.camera = new PerspectiveCamera(
-            70,
-            window.innerWidth / window.innerHeight,
-            1,
-            1000
+        this.canvas = document.createElement('canvas');
+        document.body.appendChild(this.canvas);
+        this.engine = new Engine(this.canvas, true);
+        this.scene = new Scene(this.engine);
+        this.scene.clearColor = new Color4(0,0,0,0.8);
+        this.camera = new FreeCamera(
+            'camera1',
+            new Vector3(),
+            this.scene
         );
-        this.scene = new Scene();
-        this.renderer = new WebGLRenderer({ antialias: true });
-        this.renderer.setPixelRatio(window.devicePixelRatio);
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.renderer.domElement.addEventListener('click', () => {
-            // @ts-ignore
-            this.renderer.domElement.requestPointerLock();
-        });
+        this.light = new HemisphericLight(
+            'light1',
+            new Vector3(0, -1, 0),
+            this.scene
+        );
     }
 
     setupScene() {
@@ -57,22 +79,8 @@ export default class App {
         );
     }
 
-    onWindowLoad = () => {
-        document.body.appendChild(this.renderer.domElement);
-    }
-
-    onWindowResize = () => {
-        this.camera.aspect = window.innerWidth / window.innerHeight;
-        this.camera.updateProjectionMatrix();
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-
-    animate = () => {
+    update() {
         this.player.update();
         this.house.update();
-
-        this.renderer.render(this.scene, this.camera);
-
-        requestAnimationFrame(this.animate);
     }
 }

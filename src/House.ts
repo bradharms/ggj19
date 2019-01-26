@@ -1,19 +1,10 @@
 import App from 'App';
-import {
-    BoxBufferGeometry,
-    WireframeGeometry,
-    LineSegments,
-    Material,
-    Box3
-} from 'three';
+import { MeshBuilder, Mesh, Vector3, StandardMaterial, Color3 } from 'babylonjs';
 
 export default class House {
 
-    geometry: BoxBufferGeometry
-    geometryW: WireframeGeometry
-    line: LineSegments;
-    lineM: Material;
-    bbox: Box3;
+    mesh: Mesh;
+    mat: StandardMaterial;
 
     constructor(
         public app: App,
@@ -22,18 +13,23 @@ export default class House {
         this.setupGeometry(...size);
     }
 
-    setupGeometry(w: number, h: number, d: number) {
-        this.geometry = new BoxBufferGeometry(w, h, d);
-        this.geometryW = new WireframeGeometry(this.geometry);
-        this.line = new LineSegments(this.geometryW);
-        this.line.position.y = d / 2;
-        this.lineM = this.line.material as Material;
-        this.lineM.depthTest = false;
-        this.lineM.opacity = 1;
-        this.lineM.transparent = true;
-        this.app.scene.add(this.line);
-        this.geometry.computeBoundingBox();
-        this.bbox = new Box3().setFromObject(this.line);
+    setupGeometry(width: number, height: number, depth: number) {
+        this.mat = new StandardMaterial(
+            'houseMat',
+            this.app.scene
+        );
+        this.mat.emissiveColor = new Color3(0, 1, 0);
+        this.mesh = MeshBuilder.CreateBox(
+            'house', {
+                width,
+                height,
+                depth,
+            },
+            this.app.scene
+        );
+        this.mesh.position.y = height / 2;
+        this.mesh.material = this.mat;
+        this.mesh.material.wireframe = true;
     }
 
     update() {
