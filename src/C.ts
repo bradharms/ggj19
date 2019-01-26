@@ -1,9 +1,19 @@
 export const CAMERA_Y = 7;
-export const HOUSE_D = 6;
+export const COLOR_MAT1: Cl = [0, 1, 0];
+export const COLOR_MAT2: Cl = [0, .5, .5];
+export const COLOR_MAT3: Cl = [1, .5, 0];
+export const HOUSE_D = 1;
 export const HOUSE_H = 6;
-export const HOUSE_W = 6;
-export const NETFIELD_DIAMETER_BOTTOM = 24;
+export const HOUSE_W = 1;
+export const NETFIELD_DIAMETER_BOTTOM = 48;
 export const NETFIELD_DIAMETER_TOP = 0;
 export const NETFIELD_HEIGHT = 0.0001;
-export const NETFIELD_SUBDIVISIONS = 12;
-export const NETFIELD_TESSELLATION = 12;
+export const NETFIELD_SUBDIVISIONS = 4;
+export const NETFIELD_TESSELLATION = 8;
+export const TURRET_DIAMETER_BOTTOM = 1;
+export const TURRET_DIAMETER_TOP = 0;
+export const TURRET_HEIGHT = 1.5;
+export const TURRET_SUBDIVISIONS = 1;
+export const TURRET_TESSELATION = 8;
+
+type Cl = [number, number, number];

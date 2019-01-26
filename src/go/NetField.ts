@@ -1,22 +1,23 @@
 import App from "App";
 import { Mesh, MeshBuilder } from "babylonjs";
 import * as C from 'C';
+import AbstractGameObject from "go/AbstractGameObject";
 
 interface Opts {
 }
 
-export default class NetField {
+export default class NetField extends AbstractGameObject {
 
-    toruses: Mesh[] = [];
+    mesh: Mesh;
 
     constructor(public app: App) {
-        this.setupGeometry();
+        super(app);
+        this.mesh.isPickable = true;
     }
 
-    setupGeometry() {
-        let i = 1;
-        const torus = MeshBuilder.CreateCylinder(
-            `torus${i}`,
+    setupMesh() {
+        const mesh = MeshBuilder.CreateCylinder(
+            `netfield`,
             {
                 diameterBottom: C.NETFIELD_DIAMETER_BOTTOM,
                 diameterTop: C.NETFIELD_DIAMETER_TOP,
@@ -26,8 +27,8 @@ export default class NetField {
             },
             this.app.scene
         );
-        torus.material = this.app.mats[1];
-        this.toruses.push(torus);
+        mesh.material = this.app.mats[1];
+        return mesh;
     }
 
     update() {

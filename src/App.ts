@@ -13,13 +13,11 @@ import {
 } from 'babylonjs';
 
 import * as C from 'C';
-import House from 'House';
-import Player from 'Player';
-import NetField from 'NetField';
-
-// Base unit is meters
-
-
+import House from 'go/House';
+import Player from 'go/Player';
+import NetField from 'go/NetField';
+import IGameObject from 'go/IGameObject';
+import Turret from 'go/Turret';
 
 export default class App {
     canvas: HTMLCanvasElement;
@@ -29,15 +27,16 @@ export default class App {
     light: Light;
     mats: StandardMaterial[] = [];
 
+    gameObjects: IGameObject[] = [];
     player: Player;
     house: House;
     netfield: NetField;
+    turrets: Turret[] = [];
 
     constructor() {
         window.addEventListener('load', this.onWindowLoad);
         window.addEventListener('resize', this.onWindowResize);
     }
-
 
     onWindowLoad = () => {
         this.setupRenderer();
@@ -73,37 +72,28 @@ export default class App {
     }
 
     setupMaterials() {
-        this.mats[0] = new StandardMaterial(
-            'houseMat',
-            this.scene
-        );
-        this.mats[0].emissiveColor = new Color3(0, 1, 0);
+        this.mats[0] = new StandardMaterial('mat1', this.scene);
+        this.mats[0].emissiveColor = new Color3(...C.COLOR_MAT1);
         this.mats[0].wireframe = true;
 
-        this.mats[1] = new StandardMaterial(
-            'netfieldMat',
-            this.scene
-        );
-        this.mats[1].emissiveColor = new Color3(1, 0, 0);
+        this.mats[1] = new StandardMaterial('mat2', this.scene);
+        this.mats[1].emissiveColor = new Color3(...C.COLOR_MAT2);
         this.mats[1].wireframe = true;
+
+        this.mats[2] = new StandardMaterial('mat3', this.scene);
+        this.mats[2].emissiveColor = new Color3(...C.COLOR_MAT3);
+        this.mats[2].wireframe = true;
     }
 
     setupScene() {
         this.player = new Player(this);
         this.netfield = new NetField(this);
-        this.house = new House(
-            this,
-            [
-                C.HOUSE_W,
-                C.HOUSE_H,
-                C.HOUSE_D
-            ]
-        );
+        this.house = new House(this);
     }
 
     update() {
-        this.player.update();
-        this.netfield.update();
-        this.house.update();
+        for (let go of this.gameObjects) {
+            go.update();
+        }
     }
 }
