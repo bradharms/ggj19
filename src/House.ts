@@ -3,7 +3,8 @@ import {
     BoxBufferGeometry,
     WireframeGeometry,
     LineSegments,
-    Material
+    Material,
+    Box3
 } from 'three';
 
 export default class House {
@@ -12,6 +13,7 @@ export default class House {
     geometryW: WireframeGeometry
     line: LineSegments;
     lineM: Material;
+    bbox: Box3;
 
     constructor(
         public app: App,
@@ -30,6 +32,8 @@ export default class House {
         this.lineM.opacity = 1;
         this.lineM.transparent = true;
         this.app.scene.add(this.line);
+        this.geometry.computeBoundingBox();
+        this.bbox = new Box3().setFromObject(this.line);
     }
 
     update() {

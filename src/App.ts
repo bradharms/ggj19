@@ -5,6 +5,7 @@ import {
 } from 'three';
 
 import House from 'House';
+import Player from 'Player';
 
 // Base unit is meters
 
@@ -18,11 +19,12 @@ export default class App {
     scene: Scene;
     renderer: WebGLRenderer;
 
+    player: Player;
     house: House;
 
     constructor() {
         this.setupRenderer();
-        this.setupGeometry();
+        this.setupScene();
         window.addEventListener('load', this.onWindowLoad);
         window.addEventListener('resize', this.onWindowResize);
         this.animate();
@@ -36,13 +38,13 @@ export default class App {
             1000
         );
         this.scene = new Scene();
-        this.camera.position.y = CAMERA_Y;;
         this.renderer = new WebGLRenderer({ antialias: true });
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
-    setupGeometry() {
+    setupScene() {
+        this.player = new Player(this);
         this.house = new House(
             this,
             [HOUSE_W,
@@ -62,6 +64,7 @@ export default class App {
     }
 
     animate = () => {
+        this.player.update();
         this.house.update();
 
         this.renderer.render(this.scene, this.camera);
