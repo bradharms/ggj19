@@ -41,6 +41,10 @@ export default class App {
         this.renderer = new WebGLRenderer({ antialias: true });
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.domElement.addEventListener('click', () => {
+            // @ts-ignore
+            this.renderer.domElement.requestPointerLock();
+        });
     }
 
     setupScene() {

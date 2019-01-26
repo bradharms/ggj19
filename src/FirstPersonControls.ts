@@ -43,9 +43,6 @@ export default class FirstPersonControls {
         public object: any,
         public domElement: Document | HTMLElement = document
     ) {
-        this.object = object;
-        this.domElement = (domElement !== undefined) ? domElement : document;
-
         if (!(this.domElement instanceof Document)) {
             this.domElement.setAttribute('tabindex', '-1');
         }
@@ -234,4 +231,3 @@ export default class FirstPersonControls {
         window.removeEventListener('keyup', this.onKeyUp, false);
     }
 }
-;
