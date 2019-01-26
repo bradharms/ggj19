@@ -1,5 +1,5 @@
 import App from 'App';
-import { MeshBuilder, Mesh, Vector3, StandardMaterial, Color3 } from 'babylonjs';
+import { MeshBuilder, Mesh, Vector3, StandardMaterial, Color3, PhysicsImpostor } from 'babylonjs';
 import AbstractGameObject from 'go/GameObject';
 import * as C from 'C';
 
@@ -7,9 +7,19 @@ export default class House extends AbstractGameObject {
 
     mesh: Mesh;
     mat: StandardMaterial;
+    impostor: PhysicsImpostor;
 
     constructor(public app: App) {
         super(app);
+        this.impostor = new PhysicsImpostor(
+            this.mesh,
+            PhysicsImpostor.BoxImpostor,
+            {
+                mass: 0
+            },
+            this.app.scene
+        );
+
     }
 
     setupMesh() {

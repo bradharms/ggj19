@@ -41,9 +41,7 @@ export default class Player extends AbstractGameObject {
         if (!hit) {
             return;
         }
-        console.log(pickedPoint.x, pickedPoint.z);
-        const t = new Turret(this.app, pickedPoint.x, pickedPoint.z);
-        console.log(t);
+        new Turret(this.app, pickedPoint.x, pickedPoint.z);
     }
 
     onMouseMove = (e: MouseEvent) => {
@@ -55,8 +53,8 @@ export default class Player extends AbstractGameObject {
         if (this.rotX > Math.PI / 2.3) {
             this.rotX = Math.PI / 2.3;
         }
-        if (this.rotX < 0) {
-            this.rotX = 0;
+        if (this.rotX < - Math.PI / 2.1) {
+            this.rotX = -Math.PI / 2.1;
         }
         this.app.camera.rotation.x = this.rotX;
         this.app.camera.rotation.y = this.rotY;

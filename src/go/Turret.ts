@@ -1,5 +1,5 @@
 import AbstractGameObject from 'go/GameObject';
-import { Mesh, MeshBuilder } from 'babylonjs';
+import { Mesh, MeshBuilder, PhysicsImpostor } from 'babylonjs';
 import App from 'App';
 import * as C from 'C';
 
@@ -9,6 +9,7 @@ export default class Turret extends AbstractGameObject {
 
     mesh: Mesh;
     turretId: number;
+    impostor: PhysicsImpostor;
 
     constructor(app: App, x: number, z: number){
         super(app);
@@ -16,6 +17,14 @@ export default class Turret extends AbstractGameObject {
         this.app.turrets.push(this);
         this.mesh.position.x = x;
         this.mesh.position.z = z;
+        this.impostor = new PhysicsImpostor(
+            this.mesh,
+            PhysicsImpostor.CylinderImpostor,
+            {
+                mass: 0.1
+            },
+            this.app.scene
+        );
     }
 
     destroy() {
