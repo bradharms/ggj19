@@ -2,7 +2,7 @@ import App from "App";
 import {
     Vector3, Mesh,
 } from 'babylonjs';
-import AbstractGameObject from "go/AbstractGameObject";
+import AbstractGameObject from "go/GameObject";
 import Turret from "go/Turret";
 
 const PLAYER_HEIGHT = 2;

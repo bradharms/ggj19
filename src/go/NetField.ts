@@ -1,7 +1,7 @@
 import App from "App";
 import { Mesh, MeshBuilder } from "babylonjs";
 import * as C from 'C';
-import AbstractGameObject from "go/AbstractGameObject";
+import AbstractGameObject from "go/GameObject";
 
 interface Opts {
 }

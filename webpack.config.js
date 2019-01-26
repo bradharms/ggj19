@@ -2,6 +2,8 @@
 
 const path = require('path');
 const webpack = require('webpack');
+// const HappyPack = require('happypack');
+// const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 /** @type {webpack.Configuration} */
 module.exports =  {
@@ -16,6 +18,7 @@ module.exports =  {
         rules: [
             {
                 test: /.*\.(t|j)s$/,
+                exclude: /node_modules/,
                 use: ['ts-loader']
             },
             {
@@ -32,6 +35,17 @@ module.exports =  {
         hot: true,
     },
     plugins: [
-        new webpack.HotModuleReplacementPlugin()
+        new webpack.HotModuleReplacementPlugin(),
+        // new HappyPack({
+        //     loaders: [
+        //         {
+        //             loader: 'ts-loader',
+        //             query: {
+        //                 happyPackMode: true,
+        //             }
+        //         }
+        //     ]
+        // }),
+        // new ForkTsCheckerWebpackPlugin()
     ]
 };

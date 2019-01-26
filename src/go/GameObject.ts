@@ -1,8 +1,7 @@
-import IGameObject from "go/IGameObject";
 import App from "App";
 import { Mesh } from 'babylonjs';
 
-export default abstract class AbstractGameObject implements IGameObject {
+export default abstract class GameObject {
     constructor(public app: App) {
         app.gameObjects.push(this);
         this.mesh = this.setupMesh();

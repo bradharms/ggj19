@@ -1,4 +1,4 @@
-import AbstractGameObject from 'go/AbstractGameObject';
+import AbstractGameObject from 'go/GameObject';
 import { Mesh, MeshBuilder } from 'babylonjs';
 import App from 'App';
 import * as C from 'C';

@@ -1,23 +1,22 @@
 import {
     Scene,
-    FreeCameraMouseInput,
     FreeCamera,
     Vector3,
-    MeshBuilder,
-    HemisphericLight,
     Engine,
     Light,
     Color3,
     Color4,
-    StandardMaterial
+    StandardMaterial,
+    OimoJSPlugin
 } from 'babylonjs';
 
 import * as C from 'C';
 import House from 'go/House';
 import Player from 'go/Player';
 import NetField from 'go/NetField';
-import IGameObject from 'go/IGameObject';
+import GameObject from 'go/GameObject';
 import Turret from 'go/Turret';
+import Trojan from 'go/Trojan';
 
 export default class App {
     canvas: HTMLCanvasElement;
@@ -26,12 +25,15 @@ export default class App {
     scene: Scene;
     light: Light;
     mats: StandardMaterial[] = [];
+    physics: OimoJSPlugin;
+    enemySpawnTime = C.INITIAL_ENEMY_SPAWN_TIME;
 
-    gameObjects: IGameObject[] = [];
+    gameObjects: GameObject[] = [];
     player: Player;
     house: House;
     netfield: NetField;
     turrets: Turret[] = [];
+    trojans: Trojan[] = [];
 
     constructor() {
         window.addEventListener('load', this.onWindowLoad);
@@ -39,50 +41,52 @@ export default class App {
     }
 
     onWindowLoad = () => {
-        this.setupRenderer();
+        this.setupEngine();
         this.setupMaterials();
         this.setupScene();
 
-        this.engine.runRenderLoop(() => {
-            this.update();
-            this.scene.render();
-        });
+        this.engine.runRenderLoop(this.update);
+        setInterval(this.onEnemySpawn, C.INITIAL_ENEMY_SPAWN_TIME);
     }
 
     onWindowResize = () => {
         this.engine.resize();
     }
 
-    setupRenderer() {
+    setupEngine() {
         this.canvas = document.createElement('canvas');
         document.body.appendChild(this.canvas);
         this.engine = new Engine(this.canvas, true);
         this.scene = new Scene(this.engine);
-        this.scene.clearColor = new Color4(0,0,0,0.8);
+        this.physics = new OimoJSPlugin();
+        this.scene.enablePhysics(
+            new Vector3(...C.GRAVITY),
+            this.physics
+        );
+        this.scene.clearColor = new Color4(0,0,0,0.1);
         this.camera = new FreeCamera(
             'camera1',
             new Vector3(),
-            this.scene
-        );
-        this.light = new HemisphericLight(
-            'light1',
-            new Vector3(0, -1, 0),
             this.scene
         );
     }
 
     setupMaterials() {
         this.mats[0] = new StandardMaterial('mat1', this.scene);
-        this.mats[0].emissiveColor = new Color3(...C.COLOR_MAT1);
+        this.mats[0].emissiveColor = new Color3(...C.COLOR_MAT0);
         this.mats[0].wireframe = true;
 
         this.mats[1] = new StandardMaterial('mat2', this.scene);
-        this.mats[1].emissiveColor = new Color3(...C.COLOR_MAT2);
+        this.mats[1].emissiveColor = new Color3(...C.COLOR_MAT1);
         this.mats[1].wireframe = true;
 
         this.mats[2] = new StandardMaterial('mat3', this.scene);
-        this.mats[2].emissiveColor = new Color3(...C.COLOR_MAT3);
+        this.mats[2].emissiveColor = new Color3(...C.COLOR_MAT2);
         this.mats[2].wireframe = true;
+
+        this.mats[3] = new StandardMaterial('mat3', this.scene);
+        this.mats[3].emissiveColor = new Color3(...C.COLOR_MAT3);
+        this.mats[3].wireframe = true;
     }
 
     setupScene() {
@@ -91,9 +95,18 @@ export default class App {
         this.house = new House(this);
     }
 
-    update() {
+    update = () => {
         for (let go of this.gameObjects) {
             go.update();
         }
+        this.scene.render();
+    }
+
+    onEnemySpawn = () => {
+        const angle = Math.random() * Math.PI * 2;
+        const x = Math.cos(angle) * C.NETFIELD_DIAMETER_BOTTOM / 2;
+        const z = Math.sin(angle) * C.NETFIELD_DIAMETER_BOTTOM / 2;
+        const v3 = new Vector3(x, C.TROJAN_H / 2, z);
+        new Trojan(this, v3);
     }
 }
