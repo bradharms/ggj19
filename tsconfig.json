@@ -1,0 +1,36 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "allowJs": true,
+        "checkJs": false,
+        "esModuleInterop": true,
+        "lib": [
+            "es2018",
+            "dom",
+            "esnext.asynciterable"
+        ],
+        "paths": {
+            "*": [
+                "./src/*"
+            ]
+        },
+        "allowSyntheticDefaultImports": true,
+        "target": "es5",
+        "module": "commonjs",
+        "outDir": "./dist",
+        "typeRoots": [
+            "./node_modules/@types"
+        ],
+        "sourceMap": true,
+        "noEmit": true,
+        "moduleResolution": "node",
+        "skipLibCheck": true
+    },
+    "include": [
+        "./**/*.ts",
+        "./**/*.js"
+    ],
+    "exclude": [
+        "./node_modules/*/**"
+    ]
+}
