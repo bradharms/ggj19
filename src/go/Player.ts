@@ -34,7 +34,7 @@ export default class Player extends GameObject {
     }
 
     placeTurret() {
-        
+
         const { hit, pickedPoint } = this.app.scene.pick(
             window.innerWidth / 2,
             window.innerHeight / 2,
@@ -58,12 +58,21 @@ export default class Player extends GameObject {
         if (this.rotX < - Math.PI / 2.1) {
             this.rotX = -Math.PI / 2.1;
         }
+        if (!this.app) {
+            return;
+        }
         this.app.camera.rotation.x = this.rotX;
         this.app.camera.rotation.y = this.rotY;
     }
 
     update() {
+        if (!this.app) {
+            return;
+        }
         const {gameObjectsByType: {House: [house]}, camera} = this.app;
+        if (!house) {
+            return;
+        }
         const {boundingBox: bbox} = house.mesh.getBoundingInfo();
         camera.position.y = (bbox.maximumWorld.y + PLAYER_HEIGHT);
     }

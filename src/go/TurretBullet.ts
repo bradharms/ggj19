@@ -20,17 +20,19 @@ export default class TurretBullet extends GameObject {
         sound.setPosition(this.mesh.position);
         sound.play();
         this.app.score--;
+        this.turret.hit(1);
     }
 
     setupMesh() {
         const mesh = MeshBuilder.CreateSphere(
             this.meshName,
             {
-                diameter: C.TURRET_BULLET_RADIUS
+                diameter: C.TURRET_BULLET_RADIUS,
+                segments: C.TURRET_BULLET_SEGMENTS,
             },
             this.app.scene
         );
-        mesh.material = this.app.mats[2];
+        mesh.material = this.app.mats[0];
         return mesh;
     }
 
@@ -59,6 +61,7 @@ export default class TurretBullet extends GameObject {
             }
             if (enemy.mesh.intersectsMesh(this.mesh)) {
                 enemy.hit(this.damageValue);
+                this.turret.hit(1);
                 this.destroy();
                 return;
             }

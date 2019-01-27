@@ -31,7 +31,7 @@ export default class Trojan extends AbstractGameObject {
                 spatialSound: true,
                 loop: true,
                 autoplay: true,
-                playbackRate: .125 + ( .025 * (Math.random() - .5))
+                playbackRate: (this.app.enemySpeed * .06) + ( .025 * (Math.random() - .5))
             }
         );
         this.sound.attachToMesh(this.mesh);
@@ -39,7 +39,6 @@ export default class Trojan extends AbstractGameObject {
     }
 
     setupImpostor() {
-        this.speed = C.TROJAN_MAX_SPEED;
         const impostor = new PhysicsImpostor(
             this.mesh,
             PhysicsImpostor.BoxImpostor,
@@ -51,9 +50,9 @@ export default class Trojan extends AbstractGameObject {
         const angle = Vector3.Normalize(this.mesh.position);
         impostor.setLinearVelocity(
             new Vector3(
-                angle.x * -this.speed,
-                angle.y * -this.speed,
-                angle.z * -this.speed
+                angle.x * -this.app.enemySpeed,
+                angle.y * -this.app.enemySpeed,
+                angle.z * -this.app.enemySpeed
             )
         );
         return impostor;
@@ -86,6 +85,12 @@ export default class Trojan extends AbstractGameObject {
             this.app.score += C.TROJAN_SCORE;
             this.app.sounds.EnemyDestroy.setPosition(this.mesh.position);
             this.app.sounds.EnemyDestroy.play();
+            this.app.enemySpawnTime -= 20;
+            if (this.app.enemySpawnTime <= 0) {
+                this.app.enemySpawnTime = 1;
+            }
+            this.app.enemiesKilled ++;
+            this.app.destroyedInWave ++;
         }
         if (this.sound) {
             this.sound.dispose();
@@ -105,10 +110,25 @@ export default class Trojan extends AbstractGameObject {
                 continue;
             }
             if (this.mesh.intersectsMesh(turret.mesh)) {
-                this.destroy(true);
+                this.destroy();
                 turret.destroy();
-                return;
+                break;
             }
         }
+        if (!this.app) {
+            return
+        }
+        const houses = this.app.gameObjectsByType.House || [];
+        for (const house of houses) {
+            if (!house.mesh) {
+                continue;
+            }
+            if (this.mesh.intersectsMesh(house.mesh)) {
+                house.hit(C.TROJAN_PENALTY);
+                this.destroy(true);
+                break;
+            }
+        }
+        super.update();
     }
 }

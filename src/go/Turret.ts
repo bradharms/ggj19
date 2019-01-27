@@ -19,6 +19,7 @@ export default class Turret extends GameObject {
         this.app.score -= C.TURRET_COST;
         const r = Math.random();
         this.fireSound = this.app.sounds.CannonFire;
+        this.health = C.TURRET_INITIAL_HEALTH;
     }
 
     setupMesh() {
@@ -93,8 +94,10 @@ export default class Turret extends GameObject {
 
     destroy(isCancel = false) {
         if (!isCancel) {
-            this.app.sounds.EnemyHit.setPosition(this.mesh.position);
-            this.app.sounds.EnemyHit.play();
+            if (this.app) {
+                this.app.sounds.EnemyHit.setPosition(this.mesh.position);
+                this.app.sounds.EnemyHit.play();
+            }
         }
         super.destroy(isCancel);
     }
