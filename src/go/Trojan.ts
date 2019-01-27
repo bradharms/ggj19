@@ -11,6 +11,7 @@ export default class Trojan extends AbstractGameObject {
     speed: number;
     direction: number;
     sound: Sound;
+    health = 5;
 
     constructor(app: App, position?: Vector3) {
         super('Trojan', app, position);
@@ -19,14 +20,14 @@ export default class Trojan extends AbstractGameObject {
             Math.atan2(angle.x, angle.z)
         this.sound = new Sound(
             this.meshName + 'Sound',
-            './soundFX/CannonFire3.wav',
+            './soundFX/CannonFire.wav',
             this.app.scene,
             null,
             {
                 spatialSound: true,
                 loop: true,
-                // autoplay: true,
-                playbackRate: 0.1
+                autoplay: true,
+                playbackRate: .125 + ( .025 * (Math.random() - .5))
             }
         );
         this.sound.attachToMesh(this.mesh);
@@ -69,11 +70,38 @@ export default class Trojan extends AbstractGameObject {
         return mesh;
     }
 
-    destroy() {
-        this.app.score += C.TROJAN_SCORE;
-        this.app.sounds.EnemyDestroy.setPosition(this.mesh.position);
-        this.app.sounds.EnemyDestroy.play();
-        super.destroy();
+    onHit(value: number) {
+        this.app.sounds.CannonFire3.setPosition(this.mesh.position);
+        this.app.sounds.CannonFire3.setPlaybackRate(1.5 + (Math.random() * 0.05))
+        this.app.sounds.CannonFire3.play();
+        super.onHit(value);
+    }
+
+    destroy(isCancel = false) {
+        if (!isCancel) {
+            this.app.score += C.TROJAN_SCORE;
+            this.app.sounds.EnemyDestroy.setPosition(this.mesh.position);
+            this.app.sounds.EnemyDestroy.play();
+        }
         this.sound.dispose();
+        super.destroy(isCancel);
+    }
+
+    update() {
+        super.update();
+        if (!this.app) {
+            return;
+        }
+        const turrets = this.app.gameObjectsByType.Turret || [];
+        for (const turret of turrets) {
+            if (!turret.mesh) {
+                continue;
+            }
+            if (this.mesh.intersectsMesh(turret.mesh)) {
+                this.destroy(true);
+                turret.destroy();
+                return;
+            }
+        }
     }
 }

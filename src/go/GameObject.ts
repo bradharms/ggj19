@@ -12,6 +12,7 @@ export default abstract class GameObject {
     timeouts: any[] = [];
     intervals: any[] = [];
     health = 1;
+    vulnerable = true;
 
     constructor(public typeName: string, public app: App, position?: Vector3) {
         this.idn = count++;
@@ -77,10 +78,24 @@ export default abstract class GameObject {
     }
 
     hit(value: number) {
+        if (!this.vulnerable) {
+            return false;
+        }
+        this.onHit(value);
+        this.vulnerable = false;
+        this.setTimeout(this.onHitReset, 100);
+        return true;
+    }
+
+    onHit(value: number) {
         this.health -= value;
         if (this.health <= 0) {
             this.destroy();
         }
+    }
+
+    onHitReset = () => {
+        this.vulnerable = true;
     }
 
     destroy(isCanel = false) {

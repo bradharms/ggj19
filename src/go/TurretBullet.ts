@@ -5,6 +5,8 @@ import Turret from "./Turret";
 import * as C from 'C';
 
 export default class TurretBullet extends GameObject {
+    damageValue = 1;
+
     constructor(
         app: App,
         public turret: Turret,
@@ -45,5 +47,20 @@ export default class TurretBullet extends GameObject {
 
     onTimeout = () => {
         this.destroy();
+    }
+
+    update() {
+        super.update();
+        const enemies = this.app.gameObjectsByType.Trojan || [];
+        for (const enemy of enemies) {
+            if (!enemy.mesh) {
+                continue;
+            }
+            if (enemy.mesh.intersectsMesh(this.mesh)) {
+                enemy.hit(this.damageValue);
+                this.destroy();
+                return;
+            }
+        }
     }
 }

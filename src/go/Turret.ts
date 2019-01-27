@@ -89,7 +89,10 @@ export default class Turret extends GameObject {
     }
 
     destroy(isCancel = false) {
+        if (!isCancel) {
+            this.app.sounds.EnemyHit.setPosition(this.mesh.position);
+            this.app.sounds.EnemyHit.play();
+        }
         super.destroy(isCancel);
-        // TODO: Make sound on destruction
     }
 }
