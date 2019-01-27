@@ -1,5 +1,9 @@
 # GGJ 2019 Project
 
+## Play in Browser
+
+https://lazy-hospitality.github.io/ggj19
+
 ## Synopsis
 
 Tower defense in first-person 3D, possibly VR if enough time
