@@ -1,27 +1,24 @@
 import {
+    Vector3,
+    Sound,
     Scene,
     FreeCamera,
-    Vector3,
     Engine,
     Light,
     Color3,
     Color4,
     StandardMaterial,
     OimoJSPlugin,
-    Sound,
     Mesh
 } from 'babylonjs';
 import Color from 'color';
-
 import * as C from 'C';
 import House from 'go/House';
 import Player from 'go/Player';
 import NetField from 'go/NetField';
 import GameObject from 'go/GameObject';
-import Turret from 'go/Turret';
-import Trojan from 'go/Trojan';
-import TurretBullet from 'go/TurretBullet';
 import buildDigitsMesh from 'buildDigitsMesh';
+import EnemySpawner from 'go/EnemySpawner';
 
 export default class App {
     canvas: HTMLCanvasElement;
@@ -31,16 +28,18 @@ export default class App {
     light: Light;
     mats: StandardMaterial[] = [];
     physics: OimoJSPlugin;
-    enemySpawnTime = C.INITIAL_ENEMY_SPAWN_TIME;
     sounds: {[key: string]: Sound} = {};
 
     scoreDisplay: Mesh;
     scoreMaxDisplay: Mesh;
     enemiesKilledDisplay: Mesh;
     waveNumberDisplay: Mesh;
+
     gameObjectsByType: {[key: string]: GameObject[]} = {};
     gameObjects: GameObject[] = [];
-    enemySpeed = C.TROJAN_INITIAL_SPEED;
+
+    enemySpawnTime: number;
+    enemySpeed: number;
 
     protected _enemiesKilled = 0;
     get enemiesKilled() {
@@ -61,7 +60,6 @@ export default class App {
     }
 
     protected _waveNumber = 0;
-
     get waveNumber() {
         return this._waveNumber;
     }
@@ -213,22 +211,17 @@ export default class App {
                 './soundFX/ProbePing.wav',
                 this.scene,
                 null,
-                { spatialSound: true, initialSpeed: 0.5, autoplay: true }
+                { spatialSound: true, initialSpeed: 0.5 }
             ),
         }
     }
 
     reset = () => {
+        this.setupMaterials();
         for (const obj of this.gameObjects) {
             obj.destroy(true);
         }
         this.enemySpawnTime = C.INITIAL_ENEMY_SPAWN_TIME;
-        if (this.enemySpawnTimeout) {
-            clearTimeout(this.enemySpawnTimeout);
-        }
-        this.enemySpawnTimeout = setTimeout(this.onEnemySpawn, 5000);
-        this.sounds.ProbePing.setPosition(new Vector3(0,0,0));
-        this.sounds.ProbePing.play();
         this.score = C.INITIAL_SCORE;
         this.enemiesKilled = 0;
         this.waveNumber = 1;
@@ -236,11 +229,31 @@ export default class App {
         new Player(this);
         new NetField(this);
         new House(this);
+        this.nextWave();
     }
 
-    leftInWave: number = 10;
-
     nextWave() {
+        new EnemySpawner(
+            this,
+            15 + (this.waveNumber * 2),
+            4000,
+            this.enemySpawnTime,
+            this.enemySpeed,
+            () => {
+                console.log('onSpawn');
+            },
+            () => {
+                console.log('onAllDestroyed');
+                this.nextWave();
+                this.cycleColors();
+            }
+        );
+        this.waveNumber++;
+        this.enemySpawnTime = Math.max(this.enemySpawnTime - 200, 1);
+        this.enemySpeed *= 1.05;
+    }
+
+    cycleColors() {
         this.mats.forEach((m) => {
             const c = new Color({
                 r: m.emissiveColor.r * 255,
@@ -252,21 +265,6 @@ export default class App {
             m.emissiveColor.g = c2.green() / 255;
             m.emissiveColor.b = c2.blue() / 255;
         });
-        this.waveNumber ++;
-        this.leftInWave = 50 + (this.waveNumber * 2);
-        this.enemySpawnTime -= 200;
-        if (this.enemySpawnTime <= 0) {
-            this.enemySpawnTime = 1;
-        }
-        (this.gameObjectsByType.Trojan || []).forEach(t => {
-            t.destroy(true);
-        })
-        this.enemySpeed *= 1.05;
-        if (this.enemySpawnTimeout) {
-            clearTimeout(this.enemySpawnTimeout);
-        }
-        this.enemySpawnTimeout = setTimeout(this.onEnemySpawn, 5000);
-        this.sounds.ProbePing.play();
     }
 
     update = () => {
@@ -277,40 +275,28 @@ export default class App {
         this.scene.render();
     }
 
-    onEnemySpawn = () => {
-        this.leftInWave -= 1;
-        if (this.leftInWave <= 0) {
-            const enemies = this.gameObjectsByType.Trojan || [];
-            if (enemies.length <= 0) {
-                this.nextWave();
-            }
-            return;
-        }
-        const angle = Math.random() * Math.PI * 2;
-        const x = Math.cos(angle) * C.NETFIELD_DIAMETER_BOTTOM / 2;
-        const z = Math.sin(angle) * C.NETFIELD_DIAMETER_BOTTOM / 2;
-        const v3 = new Vector3(x, C.TROJAN_H / 2, z);
-        new Trojan(this, v3);
-        if (this.enemySpawnTimeout) {
-            clearTimeout(this.enemySpawnTimeout);
-        }
-        this.enemySpawnTimeout = setTimeout(this.onEnemySpawn, this.enemySpawnTime);
+    getOneByType(typeName: string) {
+        return this.getAllByType(typeName)[0];
     }
-    enemySpawnTimeout: any;
+
+    getAllByType(typeName: string) {
+        return this.gameObjectsByType[typeName] || [];
+    }
+
+    destroyAllByType(type: string, isCancel = false) {
+        this.getAllByType(type).forEach(o => {
+            o.destroy(isCancel);
+        });
+    }
 
     gameOver() {
         this.sounds.EnemyDestroy2.setPosition(new Vector3(0,0,0));
         this.sounds.EnemyDestroy2.play();
-        for (const turret of (this.gameObjectsByType.Turret || [])) {
-            turret.destroy();
-        }
-        (this.gameObjectsByType.Trojan || []).forEach(t => {
-            t.destroy(true);
-        });
-        clearTimeout(this.enemySpawnTimeout);
+        this.destroyAllByType('Turret');
+        this.destroyAllByType('Trojan', true);
+        this.destroyAllByType('EnemySpawner');
         setTimeout( () => {
-            this.setupMaterials();
             this.reset();
-        }, 3000);
+        }, 5000);
     }
 }

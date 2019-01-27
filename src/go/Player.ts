@@ -27,7 +27,9 @@ export default class Player extends GameObject {
     onMouseDown = (e: MouseEvent) => {
         // @ts-ignore
         if (!document.pointerLockElement) {
-            this.app.canvas.requestPointerLock();
+            if (this.app) {
+                this.app.canvas.requestPointerLock();
+            }
             return;
         }
         this.placeTurret();
@@ -40,7 +42,7 @@ export default class Player extends GameObject {
         const { hit, pickedPoint } = this.app.scene.pick(
             window.innerWidth / 2,
             window.innerHeight / 2,
-            m => m === this.app.gameObjectsByType.NetField[0].mesh
+            (m: Mesh) => m === this.app.getOneByType('NetField').mesh
         );
         if (!hit) {
             return;
@@ -63,19 +65,26 @@ export default class Player extends GameObject {
         if (!this.app) {
             return;
         }
+        if (!this.app) {
+
+        }
         this.app.camera.rotation.x = this.rotX;
         this.app.camera.rotation.y = this.rotY;
     }
 
     update() {
-        if (!this.app) {
-            return;
-        }
-        const {gameObjectsByType: {House: [house]}, camera} = this.app;
-        if (!house) {
-            return;
-        }
+        if (!this.app) return;
+        const house = this.app.getOneByType('House');
+        if (!house) return;
         const {boundingBox: bbox} = house.mesh.getBoundingInfo();
-        camera.position.y = (bbox.maximumWorld.y + PLAYER_HEIGHT);
+        this.app.camera.position.y = (bbox.maximumWorld.y + PLAYER_HEIGHT);
+    }
+
+    destroy(isCancel = false) {
+        if (!this.app) {
+            this.app.canvas.removeEventListener('click', this.onMouseDown);
+            window.removeEventListener('mousemove', this.onMouseMove);
+        }
+        super.destroy(isCancel);
     }
 }

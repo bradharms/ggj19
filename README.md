@@ -20,20 +20,9 @@ Tower defense in first-person 3D, possibly VR if enough time
 
 ## TODO (order of priority):
 
+- *Web VR Support*
 - *Wall* - Enemies run into it, has health. One hit by trojan will kill. (indicated by color?)
-
-
 - *Sector divisions in play field*
-
-
-
-
-
-
-
-
-
-
 - *Multiple players*
 
 
