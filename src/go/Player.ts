@@ -2,14 +2,12 @@ import App from "App";
 import {
     Vector3, Mesh,
 } from 'babylonjs';
-import AbstractGameObject from "go/GameObject";
+import GameObject from "go/GameObject";
 import Turret from "go/Turret";
 
 const PLAYER_HEIGHT = 2;
 
-export default class Player extends AbstractGameObject {
-    typeName = 'Player';
-
+export default class Player extends GameObject {
     rotX: number = 0;
     rotY: number = 0;
 
@@ -17,7 +15,7 @@ export default class Player extends AbstractGameObject {
         public app: App,
         position?: Vector3
     ) {
-        super(app, position);
+        super('Player', app, position);
         this.app.canvas.addEventListener('click', this.onMouseDown);
         window.addEventListener('mousemove', this.onMouseMove);
     }
@@ -39,7 +37,7 @@ export default class Player extends AbstractGameObject {
         const { hit, pickedPoint } = this.app.scene.pick(
             window.innerWidth / 2,
             window.innerHeight / 2,
-            m => m === this.app.netfield.mesh
+            m => m === this.app.gameObjectsByType.NetField[0].mesh
         );
         if (!hit) {
             return;
@@ -64,7 +62,7 @@ export default class Player extends AbstractGameObject {
     }
 
     update() {
-        const {house, camera} = this.app;
+        const {gameObjectsByType: {House: [house]}, camera} = this.app;
         const {boundingBox: bbox} = house.mesh.getBoundingInfo();
         camera.position.y = (bbox.maximumWorld.y + PLAYER_HEIGHT);
     }

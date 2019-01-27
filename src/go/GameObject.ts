@@ -1,4 +1,5 @@
 import App from "App";
+import * as C from "C";
 import { Mesh, PhysicsImpostor, Vector3 } from 'babylonjs';
 
 let count = 0;
@@ -11,11 +12,13 @@ export default abstract class GameObject {
     timeouts: any[] = [];
     intervals: any[] = [];
 
-    abstract typeName: string;
-
-    constructor(public app: App, position?: Vector3) {
+    constructor(public typeName: string, public app: App, position?: Vector3) {
         this.idn = count++;
         app.gameObjects.push(this);
+        if (!app.gameObjectsByType[typeName]) {
+            app.gameObjectsByType[typeName] = [];
+        }
+        app.gameObjectsByType[typeName].push(this);
         this.mesh = this.setupMesh();
         if (this.mesh) {
             this.mesh.isPickable = false;
@@ -34,7 +37,16 @@ export default abstract class GameObject {
         return null;
     }
 
-    update() { };
+    update() {
+        if (!this.mesh) {
+            return;
+        }
+        const {x,y,z} = this.mesh.position;
+        const K = C.KILL_RADIUS;
+        if (x > K || x < -K || y > K || y < -K || z > K || y < -K) {
+            this.destroy();
+        }
+    };
 
     get meshName() {
         return `${this.typeName}${this.idn}`;
@@ -56,8 +68,13 @@ export default abstract class GameObject {
     }
 
     destroy() {
-        this.app.gameObjects =
-            this.app.gameObjects.filter(o => o !== this);
+        if (this.app) {
+            this.app.gameObjects =
+                this.app.gameObjects.filter(o => o !== this);
+            this.app.gameObjectsByType[this.typeName] =
+                this.app.gameObjectsByType[this.typeName]
+                    .filter(o => o !== this);
+        }
         if (this.mesh) {
             this.app.scene.removeMesh(this.mesh);
             this.mesh.dispose();

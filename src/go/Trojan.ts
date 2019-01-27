@@ -12,11 +12,10 @@ export default class Trojan extends AbstractGameObject {
     direction: number;
 
     constructor(app: App, position?: Vector3) {
-        super(app, position);
+        super('Trojan', app, position);
         const angle = Vector3.Normalize(position);
         this.mesh.rotation.y =
             Math.atan2(angle.x, angle.z)
-        this.app.trojans.push(this);
     }
 
     setupImpostor() {

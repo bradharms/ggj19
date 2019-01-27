@@ -1,18 +1,14 @@
-import AbstractGameObject from 'go/GameObject';
+import GameObject from 'go/GameObject';
 import { Mesh, MeshBuilder, PhysicsImpostor, Vector3 } from 'babylonjs';
 import App from 'App';
 import * as C from 'C';
 import TurretBullet from './TurretBullet';
-import Trojan from './Trojan';
 
 let count = 0;
 
-export default class Turret extends AbstractGameObject {
-    typeName: 'Turret';
-
+export default class Turret extends GameObject {
     constructor(app: App, x: number, z: number){
-        super(app, new Vector3(x, 0, z));
-        this.app.turrets.push(this);
+        super('Turret', app, new Vector3(x, 0, z));
         this.setInterval(this.fireAtNearestEnemy, C.TURRET_INITIAL_FIRE_TIME);
     }
 
@@ -43,10 +39,6 @@ export default class Turret extends AbstractGameObject {
         );
     }
 
-    destroy() {
-        this.app.turrets = this.app.turrets.filter(t => t !== this);
-    }
-
     fireAtNearestEnemy = () => {
         const enemy = this.findNearestEnemy();
         if (!enemy) {
@@ -72,8 +64,9 @@ export default class Turret extends AbstractGameObject {
 
     findNearestEnemy() {
         let shortestDist = 10000000000;
-        let enemy: Trojan = null;
-        for (let en of this.app.trojans) {
+        let enemy: GameObject = null;
+        const Trojans = this.app.gameObjectsByType.Trojan || [];
+        for (let en of Trojans) {
             const dist = Vector3.Distance(
                 this.mesh.position,
                 en.mesh.position

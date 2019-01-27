@@ -7,13 +7,11 @@ interface Opts {
 }
 
 export default class NetField extends AbstractGameObject {
-    typeName = 'NetField';
-
     mesh: Mesh;
     impostor: PhysicsImpostor;
 
     constructor(public app: App) {
-        super(app);
+        super('NetField', app);
         this.mesh.isPickable = true;
     }
 

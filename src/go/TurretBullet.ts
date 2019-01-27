@@ -5,15 +5,13 @@ import Turret from "./Turret";
 import * as C from 'C';
 
 export default class TurretBullet extends GameObject {
-    typeName: 'TurretBullet';
-
     constructor(
         app: App,
         public turret: Turret,
         position: Vector3,
         velocity: Vector3
     ) {
-        super(app, position);
+        super('TurretBullet', app, position);
         this.impostor.setLinearVelocity(velocity);
         this.setTimeout(this.onTimeout, C.TURRET_BULLET_TIMEOUT);
     }
@@ -45,11 +43,4 @@ export default class TurretBullet extends GameObject {
     onTimeout = () => {
         this.destroy();
     }
-
-    destroy() {
-        this.app.turretBullets =
-            this.app.turretBullets.filter(b => b !== this);
-        super.destroy();
-    }
-
 }

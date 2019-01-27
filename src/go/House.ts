@@ -4,10 +4,8 @@ import AbstractGameObject from 'go/GameObject';
 import * as C from 'C';
 
 export default class House extends AbstractGameObject {
-    typeName: 'House';
-
     constructor(public app: App) {
-        super(app);
+        super('House', app);
         this.impostor = new PhysicsImpostor(
             this.mesh,
             PhysicsImpostor.BoxImpostor,

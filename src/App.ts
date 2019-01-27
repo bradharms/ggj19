@@ -29,13 +29,9 @@ export default class App {
     physics: OimoJSPlugin;
     enemySpawnTime = C.INITIAL_ENEMY_SPAWN_TIME;
 
+    gameObjectsByType: {[key: string]: GameObject[]} = {};
+
     gameObjects: GameObject[] = [];
-    player: Player;
-    house: House;
-    netfield: NetField;
-    turrets: Turret[] = [];
-    turretBullets: TurretBullet[] = [];
-    trojans: Trojan[] = [];
 
     constructor() {
         window.addEventListener('load', this.onWindowLoad);
@@ -92,9 +88,9 @@ export default class App {
     }
 
     setupScene() {
-        this.player = new Player(this);
-        this.netfield = new NetField(this);
-        this.house = new House(this);
+        new Player(this);
+        new NetField(this);
+        new House(this);
     }
 
     update = () => {
