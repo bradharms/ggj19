@@ -34,6 +34,7 @@ export default class Player extends GameObject {
     }
 
     placeTurret() {
+        
         const { hit, pickedPoint } = this.app.scene.pick(
             window.innerWidth / 2,
             window.innerHeight / 2,

@@ -11,6 +11,7 @@ export default abstract class GameObject {
     impostor: PhysicsImpostor;
     timeouts: any[] = [];
     intervals: any[] = [];
+    health = 1;
 
     constructor(public typeName: string, public app: App, position?: Vector3) {
         this.idn = count++;
@@ -43,7 +44,15 @@ export default abstract class GameObject {
         }
         const {x,y,z} = this.mesh.position;
         const K = C.KILL_RADIUS;
-        if (x > K || x < -K || y > K || y < -K || z > K || y < -K) {
+        if (
+            x > K ||
+            x < -K ||
+            y > K ||
+            y < -K ||
+            z > K ||
+            z < -K ||
+            this.health <= 0
+        ) {
             this.destroy();
         }
     };
@@ -67,7 +76,14 @@ export default abstract class GameObject {
         return iv;
     }
 
-    destroy() {
+    hit(value: number) {
+        this.health -= value;
+        if (this.health <= 0) {
+            this.destroy();
+        }
+    }
+
+    destroy(isCanel = false) {
         if (this.app) {
             this.app.gameObjects =
                 this.app.gameObjects.filter(o => o !== this);

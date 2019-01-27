@@ -32,6 +32,7 @@ module.exports =  {
         extensions: ['.js', '.ts']
     },
     devServer: {
+        contentBase: '.',
         hot: true,
     },
     plugins: [

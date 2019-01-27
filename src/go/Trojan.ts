@@ -53,4 +53,11 @@ export default class Trojan extends AbstractGameObject {
         mesh.material = this.app.mats[3];
         return mesh;
     }
+
+    destroy() {
+        this.app.score += C.TROJAN_SCORE;
+        this.app.sounds.EnemyDestroy.setPosition(this.mesh.position);
+        this.app.sounds.EnemyDestroy.play();
+        super.destroy();
+    }
 }

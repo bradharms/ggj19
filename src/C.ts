@@ -28,6 +28,8 @@ export const TURRET_H = 1.5;
 export const TURRET_INITIAL_FIRE_TIME = 250;
 export const TURRET_SUBDIVISIONS = 1;
 export const TURRET_TESSELATION = 8;
-export const KILL_RADIUS = 20;
+export const KILL_RADIUS = 30;
+export const TURRET_COST = 600;
+export const TROJAN_SCORE = 200;
 
 type N3 = [number, number, number];

@@ -6,30 +6,31 @@ import * as C from 'C';
 export default class House extends AbstractGameObject {
     constructor(public app: App) {
         super('House', app);
-        this.impostor = new PhysicsImpostor(
-            this.mesh,
-            PhysicsImpostor.BoxImpostor,
-            {
-                mass: 0
-            },
-            this.app.scene
-        );
-
     }
 
     setupMesh() {
-        const mesh = MeshBuilder.CreateBox(
+        const mesh = MeshBuilder.CreateCylinder(
             this.meshName,
             {
-                width: C.HOUSE_W,
+                diameter: C.HOUSE_W,
                 height: C.HOUSE_H,
-                depth: C.HOUSE_D,
             },
             this.app.scene
         );
         mesh.material = this.app.mats[0];
         mesh.position.y = C.HOUSE_H / 2;
         return mesh;
+    }
+
+    setupImpostor() {
+        return new PhysicsImpostor(
+            this.mesh,
+            PhysicsImpostor.CylinderImpostor,
+            {
+                mass: 0
+            },
+            this.app.scene
+        );
     }
 
     update() {

@@ -7,7 +7,8 @@ import {
     Color3,
     Color4,
     StandardMaterial,
-    OimoJSPlugin
+    OimoJSPlugin,
+    Sound
 } from 'babylonjs';
 
 import * as C from 'C';
@@ -28,10 +29,14 @@ export default class App {
     mats: StandardMaterial[] = [];
     physics: OimoJSPlugin;
     enemySpawnTime = C.INITIAL_ENEMY_SPAWN_TIME;
+    sounds: {[key: string]: Sound} = {};
 
     gameObjectsByType: {[key: string]: GameObject[]} = {};
-
     gameObjects: GameObject[] = [];
+
+    protected _score = 2400; // Score is also currency; minimal value needed to place turrets
+    get score() { return this._score; }
+    set score(score: number) { this._score = Math.max(0, score); }
 
     constructor() {
         window.addEventListener('load', this.onWindowLoad);
@@ -41,6 +46,7 @@ export default class App {
     onWindowLoad = () => {
         this.setupEngine();
         this.setupMaterials();
+        this.setupSound()
         this.setupScene();
 
         this.engine.runRenderLoop(this.update);
@@ -85,6 +91,53 @@ export default class App {
         this.mats[3] = new StandardMaterial('mat3', this.scene);
         this.mats[3].emissiveColor = new Color3(...C.COLOR_MAT3);
         this.mats[3].wireframe = true;
+    }
+
+    setupSound() {
+        this.sounds = {
+            CannonFire: new Sound(
+                'CannonFire',
+                './soundFX/CannonFire.wav',
+                this.scene,
+                null,
+                { spatialSound: true }
+            ),
+            CannonFire2: new Sound(
+                'CannonFire2',
+                './soundFX/CannonFire2.wav',
+                this.scene,
+                null,
+                { spatialSound: true }
+            ),
+            CannonFire3: new Sound(
+                'CannonFire3',
+                './soundFX/CannonFire3.wav',
+                this.scene,
+                null,
+                { spatialSound: true }
+            ),
+            EnemyDestroy: new Sound(
+                'EnemyDestroy',
+                './soundFX/EnemyDestroy.wav',
+                this.scene,
+                null,
+                { spatialSound: true }
+            ),
+            EnemyDestroy2: new Sound(
+                'EnemyDestroy2',
+                './soundFX/EnemyDestroy2.wav',
+                this.scene,
+                null,
+                { spatialSound: true }
+            ),
+            EnemyHit: new Sound(
+                'EnemyHit',
+                './soundFX/EnemyHit.wav',
+                this.scene,
+                null,
+                { spatialSound: true }
+            ),
+        }
     }
 
     setupScene() {

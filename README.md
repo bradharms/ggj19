@@ -16,6 +16,16 @@ Tower defense in first-person 3D, possibly VR if enough time
 
 ## TODO (order of priority):
 
+- *Health for turrets* - Don't just fly away immediately
+- *Destroy trojans on impact with turrets*
+- *Health for trojans* - Trojens take damage instead of flying away
+- *Show score counter*
+- *Point system* - Get points for turrets destroying trojans
+    - 200 for trojan
+- *Cost to play turrets* - Use 600 points to place turret
+- *End game condition* If trojan hits base and score = 0, game over
+    - Spending points to 0 does NOT kill you
+
 - *Wall* - Enemies run into it, has health. One hit by trojan will kill. (indicated by color?)
 
 

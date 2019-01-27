@@ -10,6 +10,11 @@ export default class Turret extends GameObject {
     constructor(app: App, x: number, z: number){
         super('Turret', app, new Vector3(x, 0, z));
         this.setInterval(this.fireAtNearestEnemy, C.TURRET_INITIAL_FIRE_TIME);
+        if (this.app.score - C.TURRET_COST < 0) {
+            this.destroy(true);
+        } else {
+            this.app.score -= C.TURRET_COST;
+        }
     }
 
     setupMesh() {
@@ -77,5 +82,10 @@ export default class Turret extends GameObject {
             }
         }
         return enemy;
+    }
+
+    destroy(isCancel = false) {
+        super.destroy(isCancel);
+        // TODO: Make sound on destruction
     }
 }

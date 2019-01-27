@@ -14,6 +14,9 @@ export default class TurretBullet extends GameObject {
         super('TurretBullet', app, position);
         this.impostor.setLinearVelocity(velocity);
         this.setTimeout(this.onTimeout, C.TURRET_BULLET_TIMEOUT);
+        this.app.sounds.CannonFire.setPosition(this.mesh.position);
+        this.app.sounds.CannonFire.play();
+
     }
 
     setupMesh() {
