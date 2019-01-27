@@ -14,28 +14,42 @@ export default class TurretBullet extends GameObject {
     constructor(
         app: App,
         public turret: Turret,
+        position: Vector3,
         velocity: Vector3
     ) {
         super(app);
         this.mesh.material = turret.mesh.material; // TODO: Not currently possible to put this in createMesh()
+        this.mesh.position = position;
         count++;
         this.turretBulletId = count;
         this.impostor = new PhysicsImpostor(
             this.mesh,
             PhysicsImpostor.SphereImpostor,
             {
-                mass: 0.0001
+                mass: C.TURRET_BULLET_MASS
             },
             this.app.scene
         );
         this.impostor.setLinearVelocity(velocity);
+        setTimeout(this.onTimeout, C.TURRET_BULLET_TIMEOUT);
+    }
+
+    onTimeout = () => {
+        this.destroy();
+        this.app.physics.removePhysicsBody(this.impostor);
+    }
+
+    destroy() {
+        super.destroy();
+        this.app.turretBullets =
+            this.app.turretBullets.filter(b => b !== this);
     }
 
     setupMesh() {
         const mesh = MeshBuilder.CreateSphere(
             `turretBullet${this.turretBulletId}`,
             {
-                diameter: C.TURRET_BULLET_MAX_SPEED
+                diameter: C.TURRET_BULLET_RADIUS
             },
             this.app.scene
         );

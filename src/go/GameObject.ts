@@ -15,7 +15,9 @@ export default abstract class GameObject {
     update() { };
 
     destroy() {
-        throw new Error('TODO: Not implemented');
+        this.app.gameObjects =
+            this.app.gameObjects.filter(o => o !== this);
+        this.app.scene.removeMesh(this.mesh);
     }
 }
 

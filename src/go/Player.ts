@@ -33,7 +33,12 @@ export default class Player extends AbstractGameObject {
             this.app.canvas.requestPointerLock();
             return;
         }
-        const {hit, pickedPoint} = this.app.scene.pick(
+        this.placeTurret();
+    }
+
+
+    placeTurret() {
+        const { hit, pickedPoint } = this.app.scene.pick(
             window.innerWidth / 2,
             window.innerHeight / 2,
             m => m === this.app.netfield.mesh
@@ -60,19 +65,9 @@ export default class Player extends AbstractGameObject {
         this.app.camera.rotation.y = this.rotY;
     }
 
-    placeTurret() {
-
-    }
-
     update() {
         const {house, camera} = this.app;
         const {boundingBox: bbox} = house.mesh.getBoundingInfo();
-        if (!a) {
-            a = true;
-            console.log(bbox);
-        }
         camera.position.y = (bbox.maximumWorld.y + PLAYER_HEIGHT);
     }
 }
-
-let a = false;

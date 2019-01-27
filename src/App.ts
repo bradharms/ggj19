@@ -17,6 +17,7 @@ import NetField from 'go/NetField';
 import GameObject from 'go/GameObject';
 import Turret from 'go/Turret';
 import Trojan from 'go/Trojan';
+import TurretBullet from 'go/TurretBullet';
 
 export default class App {
     canvas: HTMLCanvasElement;
@@ -33,6 +34,7 @@ export default class App {
     house: House;
     netfield: NetField;
     turrets: Turret[] = [];
+    turretBullets: TurretBullet[] = [];
     trojans: Trojan[] = [];
 
     constructor() {
