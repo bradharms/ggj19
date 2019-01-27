@@ -8,19 +8,32 @@ import Trojan from './Trojan';
 let count = 0;
 
 export default class Turret extends AbstractGameObject {
-
-    mesh: Mesh;
-    turretId: number;
-    impostor: PhysicsImpostor;
-    interval: ReturnType<typeof setInterval>;
+    typeName: 'Turret';
 
     constructor(app: App, x: number, z: number){
-        super(app);
-        this.turretId = count++;
+        super(app, new Vector3(x, 0, z));
         this.app.turrets.push(this);
-        this.mesh.position.x = x;
-        this.mesh.position.z = z;
-        this.impostor = new PhysicsImpostor(
+        this.setInterval(this.fireAtNearestEnemy, C.TURRET_INITIAL_FIRE_TIME);
+    }
+
+    setupMesh() {
+        const mesh = MeshBuilder.CreateCylinder(
+            this.meshName,
+            {
+                diameterBottom: C.TURRET_DIAMETER_BOTTOM,
+                diameterTop: C.TURRET_DIAMETER_TOP,
+                subdivisions: C.TURRET_SUBDIVISIONS,
+                tessellation: C.TURRET_TESSELATION
+            },
+            this.app.scene
+        );
+        mesh.position.y = C.TURRET_H / 2;
+        mesh.material = this.app.scene.materials[2];
+        return mesh;
+    }
+
+    setupImpostor() {
+        return new PhysicsImpostor(
             this.mesh,
             PhysicsImpostor.CylinderImpostor,
             {
@@ -28,8 +41,6 @@ export default class Turret extends AbstractGameObject {
             },
             this.app.scene
         );
-        this.interval =
-            setInterval(this.fireAtNearestEnemy, C.TURRET_INITIAL_FIRE_TIME);
     }
 
     destroy() {
@@ -56,7 +67,7 @@ export default class Turret extends AbstractGameObject {
             0,
             vdiff.z * C.TURRET_BULLET_MAX_SPEED
         );
-        const turretBullet = new TurretBullet(this.app, this, p, v);
+        new TurretBullet(this.app, this, p, v);
     }
 
     findNearestEnemy() {
@@ -73,21 +84,5 @@ export default class Turret extends AbstractGameObject {
             }
         }
         return enemy;
-    }
-
-    setupMesh() {
-        const mesh = MeshBuilder.CreateCylinder(
-            `turret${this.turretId}`,
-            {
-                diameterBottom: C.TURRET_DIAMETER_BOTTOM,
-                diameterTop: C.TURRET_DIAMETER_TOP,
-                subdivisions: C.TURRET_SUBDIVISIONS,
-                tessellation: C.TURRET_TESSELATION
-            },
-            this.app.scene
-        );
-        mesh.position.y = C.TURRET_H / 2;
-        mesh.material = this.app.scene.materials[2];
-        return mesh;
     }
 }

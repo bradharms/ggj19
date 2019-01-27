@@ -8,17 +8,16 @@ import Turret from "go/Turret";
 const PLAYER_HEIGHT = 2;
 
 export default class Player extends AbstractGameObject {
-
-    mesh: Mesh;
+    typeName = 'Player';
 
     rotX: number = 0;
     rotY: number = 0;
-    isPointerLocked: boolean = false;
 
     constructor(
-        public app: App
+        public app: App,
+        position?: Vector3
     ) {
-        super(app);
+        super(app, position);
         this.app.canvas.addEventListener('click', this.onMouseDown);
         window.addEventListener('mousemove', this.onMouseMove);
     }
@@ -35,7 +34,6 @@ export default class Player extends AbstractGameObject {
         }
         this.placeTurret();
     }
-
 
     placeTurret() {
         const { hit, pickedPoint } = this.app.scene.pick(

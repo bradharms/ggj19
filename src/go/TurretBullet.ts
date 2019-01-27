@@ -4,12 +4,8 @@ import { PhysicsImpostor, MeshBuilder, Vector3 } from "babylonjs";
 import Turret from "./Turret";
 import * as C from 'C';
 
-let count = 0;
-
 export default class TurretBullet extends GameObject {
-
-    turretBulletId: number;
-    impostor: PhysicsImpostor;
+    typeName: 'TurretBullet';
 
     constructor(
         app: App,
@@ -17,12 +13,25 @@ export default class TurretBullet extends GameObject {
         position: Vector3,
         velocity: Vector3
     ) {
-        super(app);
-        this.mesh.material = turret.mesh.material; // TODO: Not currently possible to put this in createMesh()
-        this.mesh.position = position;
-        count++;
-        this.turretBulletId = count;
-        this.impostor = new PhysicsImpostor(
+        super(app, position);
+        this.impostor.setLinearVelocity(velocity);
+        this.setTimeout(this.onTimeout, C.TURRET_BULLET_TIMEOUT);
+    }
+
+    setupMesh() {
+        const mesh = MeshBuilder.CreateSphere(
+            this.meshName,
+            {
+                diameter: C.TURRET_BULLET_RADIUS
+            },
+            this.app.scene
+        );
+        mesh.material = this.app.mats[2];
+        return mesh;
+    }
+
+    setupImpostor() {
+        const impostor = new PhysicsImpostor(
             this.mesh,
             PhysicsImpostor.SphereImpostor,
             {
@@ -30,29 +39,17 @@ export default class TurretBullet extends GameObject {
             },
             this.app.scene
         );
-        this.impostor.setLinearVelocity(velocity);
-        setTimeout(this.onTimeout, C.TURRET_BULLET_TIMEOUT);
+        return impostor;
     }
 
     onTimeout = () => {
         this.destroy();
-        this.app.physics.removePhysicsBody(this.impostor);
     }
 
     destroy() {
-        super.destroy();
         this.app.turretBullets =
             this.app.turretBullets.filter(b => b !== this);
+        super.destroy();
     }
 
-    setupMesh() {
-        const mesh = MeshBuilder.CreateSphere(
-            `turretBullet${this.turretBulletId}`,
-            {
-                diameter: C.TURRET_BULLET_RADIUS
-            },
-            this.app.scene
-        );
-        return mesh;
-    }
 }

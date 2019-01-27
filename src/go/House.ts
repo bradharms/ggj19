@@ -4,10 +4,7 @@ import AbstractGameObject from 'go/GameObject';
 import * as C from 'C';
 
 export default class House extends AbstractGameObject {
-
-    mesh: Mesh;
-    mat: StandardMaterial;
-    impostor: PhysicsImpostor;
+    typeName: 'House';
 
     constructor(public app: App) {
         super(app);
@@ -24,7 +21,8 @@ export default class House extends AbstractGameObject {
 
     setupMesh() {
         const mesh = MeshBuilder.CreateBox(
-            'house', {
+            this.meshName,
+            {
                 width: C.HOUSE_W,
                 height: C.HOUSE_H,
                 depth: C.HOUSE_D,

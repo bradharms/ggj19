@@ -6,23 +6,22 @@ import * as C from 'C';
 let count = 0;
 
 export default class Trojan extends AbstractGameObject {
+    typeName: 'Trojan';
 
-    trojanId: number;
     speed: number;
     direction: number;
-    impostor: PhysicsImpostor;
 
-    constructor(app: App, pos: Vector3) {
-        super(app);
-        const angle = Vector3.Normalize(pos);
-        this.mesh.position = pos;
+    constructor(app: App, position?: Vector3) {
+        super(app, position);
+        const angle = Vector3.Normalize(position);
         this.mesh.rotation.y =
             Math.atan2(angle.x, angle.z)
-        count++;
-        this.trojanId = count;
         this.app.trojans.push(this);
+    }
+
+    setupImpostor() {
         this.speed = C.TROJAN_MAX_SPEED;
-        this.impostor = new PhysicsImpostor(
+        const impostor = new PhysicsImpostor(
             this.mesh,
             PhysicsImpostor.BoxImpostor,
             {
@@ -30,13 +29,15 @@ export default class Trojan extends AbstractGameObject {
             },
             this.app.scene
         );
-        this.impostor.setLinearVelocity(
+        const angle = Vector3.Normalize(this.mesh.position);
+        impostor.setLinearVelocity(
             new Vector3(
                 angle.x * -this.speed,
                 angle.y * -this.speed,
                 angle.z * -this.speed
             )
         );
+        return impostor;
     }
 
     setupMesh() {

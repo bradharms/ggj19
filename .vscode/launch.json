@@ -10,7 +10,8 @@
             "type": "chrome",
             "request": "attach",
             "urlFilter": "http://localhost:8080",
-            "webRoot": "/www/web/public/"
+            "webRoot": "/www/web/public/",
+            "sourceMaps": true
         }
     ]
 }
