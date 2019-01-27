@@ -1,6 +1,6 @@
 import GameObject from "go/GameObject";
 import App from "App";
-import { PhysicsImpostor, MeshBuilder, Vector3 } from "babylonjs";
+import { PhysicsImpostor, MeshBuilder, Vector3, Sound } from "babylonjs";
 import Turret from "./Turret";
 import * as C from 'C';
 
@@ -9,14 +9,14 @@ export default class TurretBullet extends GameObject {
         app: App,
         public turret: Turret,
         position: Vector3,
-        velocity: Vector3
+        velocity: Vector3,
+        sound: Sound
     ) {
         super('TurretBullet', app, position);
         this.impostor.setLinearVelocity(velocity);
         this.setTimeout(this.onTimeout, C.TURRET_BULLET_TIMEOUT);
-        this.app.sounds.CannonFire.setPosition(this.mesh.position);
-        this.app.sounds.CannonFire.play();
-
+        sound.setPosition(this.mesh.position);
+        sound.play();
     }
 
     setupMesh() {

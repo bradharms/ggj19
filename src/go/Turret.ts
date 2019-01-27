@@ -1,5 +1,5 @@
 import GameObject from 'go/GameObject';
-import { Mesh, MeshBuilder, PhysicsImpostor, Vector3 } from 'babylonjs';
+import { Mesh, MeshBuilder, PhysicsImpostor, Vector3, Sound } from 'babylonjs';
 import App from 'App';
 import * as C from 'C';
 import TurretBullet from './TurretBullet';
@@ -7,14 +7,18 @@ import TurretBullet from './TurretBullet';
 let count = 0;
 
 export default class Turret extends GameObject {
+    fireSound: Sound;
+
     constructor(app: App, x: number, z: number){
         super('Turret', app, new Vector3(x, 0, z));
-        this.setInterval(this.fireAtNearestEnemy, C.TURRET_INITIAL_FIRE_TIME);
         if (this.app.score - C.TURRET_COST < 0) {
             this.destroy(true);
-        } else {
-            this.app.score -= C.TURRET_COST;
+            return;
         }
+        this.setInterval(this.fireAtNearestEnemy, C.TURRET_INITIAL_FIRE_TIME);
+        this.app.score -= C.TURRET_COST;
+        const r = Math.random();
+        this.fireSound = this.app.sounds.CannonFire;
     }
 
     setupMesh() {
@@ -64,7 +68,7 @@ export default class Turret extends GameObject {
             0,
             vdiff.z * C.TURRET_BULLET_MAX_SPEED
         );
-        new TurretBullet(this.app, this, p, v);
+        new TurretBullet(this.app, this, p, v, this.fireSound);
     }
 
     findNearestEnemy() {
