@@ -16,7 +16,6 @@ Tower defense in first-person 3D, possibly VR if enough time
 
 ## TODO (order of priority):
 
-- *Health for turrets* - Don't just fly away immediately
 - *Destroy trojans on impact with turrets*
 - *Health for trojans* - Trojens take damage instead of flying away
 - *Show score counter*
@@ -49,3 +48,4 @@ Tower defense in first-person 3D, possibly VR if enough time
 - *Player* - Camera + controls via mouse. Health.
 - *Turret* - Shoots at enemies in range. Number of avail. turrents = num. enemies defeated / 3(?)
 - *Trojan* - Runs in straight line towards center and destroys what it hits, and itself upon attack
+- *Health for turrets* - Don't just fly away immediately

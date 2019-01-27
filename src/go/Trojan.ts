@@ -15,7 +15,7 @@ export default class Trojan extends AbstractGameObject {
 
     constructor(app: App, position?: Vector3) {
         super('Trojan', app, position);
-        if (app.gameObjectsByType.Trojan.length >= 20) {
+        if (app.gameObjectsByType.Trojan.length >= 10) {
             this.destroy(true);
             return;
         }
@@ -87,7 +87,10 @@ export default class Trojan extends AbstractGameObject {
             this.app.sounds.EnemyDestroy.setPosition(this.mesh.position);
             this.app.sounds.EnemyDestroy.play();
         }
-        this.sound.dispose();
+        if (this.sound) {
+            this.sound.dispose();
+            this.sound = null;
+        }
         super.destroy(isCancel);
     }
 

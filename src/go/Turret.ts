@@ -55,17 +55,17 @@ export default class Turret extends GameObject {
         }
         const vdiff = Vector3.Normalize(new Vector3(
             enemy.mesh.position.x - this.mesh.position.x,
-            0,
+            enemy.mesh.position.y - this.mesh.position.y,
             enemy.mesh.position.z - this.mesh.position.z,
         ));
         const p = new Vector3(
             this.mesh.position.x + (vdiff.x * C.TURRET_BULLET_SPAWN_DIST),
-            C.TURRET_H / 2,
+            this.mesh.position.y,
             this.mesh.position.z + (vdiff.z * C.TURRET_BULLET_SPAWN_DIST),
         );
         const v = new Vector3(
             vdiff.x * C.TURRET_BULLET_MAX_SPEED,
-            0,
+            vdiff.y * C.TURRET_BULLET_MAX_SPEED,
             vdiff.z * C.TURRET_BULLET_MAX_SPEED
         );
         new TurretBullet(this.app, this, p, v, this.fireSound);
@@ -84,6 +84,9 @@ export default class Turret extends GameObject {
                 shortestDist = dist;
                 enemy = en;
             }
+        }
+        if (shortestDist > C.TURRET_RANGE) {
+            return null;
         }
         return enemy;
     }
