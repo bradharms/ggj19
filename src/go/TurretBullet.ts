@@ -19,6 +19,7 @@ export default class TurretBullet extends GameObject {
         this.setTimeout(this.onTimeout, C.TURRET_BULLET_TIMEOUT);
         sound.setPosition(this.mesh.position);
         sound.play();
+        this.app.score--;
     }
 
     setupMesh() {

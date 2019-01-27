@@ -8,6 +8,7 @@ export const HOUSE_D = 1;
 export const HOUSE_H = 6;
 export const HOUSE_W = 1;
 export const INITIAL_ENEMY_SPAWN_TIME = 2000;
+export const INITIAL_SCORE = 2400;
 export const KILL_RADIUS = 50;
 export const NETFIELD_DIAMETER_BOTTOM = 48;
 export const NETFIELD_DIAMETER_TOP = 0;

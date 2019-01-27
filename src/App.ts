@@ -8,7 +8,8 @@ import {
     Color4,
     StandardMaterial,
     OimoJSPlugin,
-    Sound
+    Sound,
+    Mesh
 } from 'babylonjs';
 
 import * as C from 'C';
@@ -19,6 +20,7 @@ import GameObject from 'go/GameObject';
 import Turret from 'go/Turret';
 import Trojan from 'go/Trojan';
 import TurretBullet from 'go/TurretBullet';
+import buildDigitsMesh from 'buildDigitsMesh';
 
 export default class App {
     canvas: HTMLCanvasElement;
@@ -31,12 +33,40 @@ export default class App {
     enemySpawnTime = C.INITIAL_ENEMY_SPAWN_TIME;
     sounds: {[key: string]: Sound} = {};
 
+    scoreDisplay: Mesh;
+    scoreMaxDisplay: Mesh;
     gameObjectsByType: {[key: string]: GameObject[]} = {};
     gameObjects: GameObject[] = [];
 
-    protected _score = 2400; // Score is also currency; minimal value needed to place turrets
+    scoreMax = 0;
+    protected _score = 0; // Score is also currency; minimal value needed to place turrets
     get score() { return this._score; }
-    set score(score: number) { this._score = Math.max(0, score); }
+    set score(score: number) {
+        this._score = Math.max(0, score);
+        if (this._score > this.scoreMax) {
+            this.scoreMax = this._score;
+        }
+
+        if (this.scoreDisplay) {
+            this.scene.removeMesh(this.scoreDisplay);
+            this.scoreDisplay.dispose();
+        }
+        this.scoreDisplay = buildDigitsMesh(this.scene, this._score);
+        this.scoreDisplay.material = this.mats[0];
+        this.scoreDisplay.position.z = 40;
+        this.scoreDisplay.position.y = 7;
+        this.scoreDisplay.scaling = new Vector3(6, 6, 3);
+
+        if (this.scoreMaxDisplay) {
+            this.scene.removeMesh(this.scoreMaxDisplay);
+            this.scoreMaxDisplay.dispose();
+        }
+        this.scoreMaxDisplay = buildDigitsMesh(this.scene, this.scoreMax);
+        this.scoreMaxDisplay.material = this.mats[0];
+        this.scoreMaxDisplay.position.z = 40;
+        this.scoreMaxDisplay.position.y = 14;
+        this.scoreMaxDisplay.scaling = new Vector3(4, 4, 2);
+    }
 
     constructor() {
         window.addEventListener('load', this.onWindowLoad);
@@ -141,6 +171,7 @@ export default class App {
     }
 
     setupScene() {
+        this.score = C.INITIAL_SCORE;
         new Player(this);
         new NetField(this);
         new House(this);
