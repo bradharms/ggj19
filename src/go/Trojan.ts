@@ -90,7 +90,6 @@ export default class Trojan extends AbstractGameObject {
                 this.app.enemySpawnTime = 1;
             }
             this.app.enemiesKilled ++;
-            this.app.destroyedInWave ++;
         }
         if (this.sound) {
             this.sound.dispose();

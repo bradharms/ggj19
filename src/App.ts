@@ -159,7 +159,7 @@ export default class App {
         this.mats[2].emissiveColor = new Color3(...C.COLOR_MAT2);
         this.mats[2].wireframe = true;
 
-        this.mats[3] = new StandardMaterial('mat3', this.scene);
+        this.mats[3] = new StandardMaterial('mat4', this.scene);
         this.mats[3].emissiveColor = new Color3(...C.COLOR_MAT3);
         this.mats[3].wireframe = true;
     }
@@ -223,6 +223,9 @@ export default class App {
             obj.destroy(true);
         }
         this.enemySpawnTime = C.INITIAL_ENEMY_SPAWN_TIME;
+        if (this.enemySpawnTimeout) {
+            clearTimeout(this.enemySpawnTimeout);
+        }
         this.enemySpawnTimeout = setTimeout(this.onEnemySpawn, 5000);
         this.sounds.ProbePing.setPosition(new Vector3(0,0,0));
         this.sounds.ProbePing.play();
@@ -236,7 +239,6 @@ export default class App {
     }
 
     leftInWave: number = 10;
-    destroyedInWave: number = 0;
 
     nextWave() {
         this.mats.forEach((m) => {
@@ -245,16 +247,13 @@ export default class App {
                 g: m.emissiveColor.g * 255,
                 b: m.emissiveColor.b * 255,
             });
-            console.log(c);
             const c2 = c.rotate(40);
-            console.log(c2);;
             m.emissiveColor.r = c2.red() / 255;
             m.emissiveColor.g = c2.green() / 255;
             m.emissiveColor.b = c2.blue() / 255;
         });
         this.waveNumber ++;
         this.leftInWave = 50 + (this.waveNumber * 2);
-        this.destroyedInWave = 0;
         this.enemySpawnTime -= 200;
         if (this.enemySpawnTime <= 0) {
             this.enemySpawnTime = 1;
@@ -263,7 +262,9 @@ export default class App {
             t.destroy(true);
         })
         this.enemySpeed *= 1.05;
-        clearTimeout(this.enemySpawnTimeout);
+        if (this.enemySpawnTimeout) {
+            clearTimeout(this.enemySpawnTimeout);
+        }
         this.enemySpawnTimeout = setTimeout(this.onEnemySpawn, 5000);
         this.sounds.ProbePing.play();
     }
@@ -272,16 +273,17 @@ export default class App {
         for (let go of this.gameObjects) {
             go.update();
         }
-        const enemies = this.gameObjectsByType.Trojan || [];
-        if (enemies.length <= 0 && this.leftInWave <= 0) {
-            this.nextWave();
-        }
+
         this.scene.render();
     }
 
     onEnemySpawn = () => {
         this.leftInWave -= 1;
         if (this.leftInWave <= 0) {
+            const enemies = this.gameObjectsByType.Trojan || [];
+            if (enemies.length <= 0) {
+                this.nextWave();
+            }
             return;
         }
         const angle = Math.random() * Math.PI * 2;
@@ -289,6 +291,9 @@ export default class App {
         const z = Math.sin(angle) * C.NETFIELD_DIAMETER_BOTTOM / 2;
         const v3 = new Vector3(x, C.TROJAN_H / 2, z);
         new Trojan(this, v3);
+        if (this.enemySpawnTimeout) {
+            clearTimeout(this.enemySpawnTimeout);
+        }
         this.enemySpawnTimeout = setTimeout(this.onEnemySpawn, this.enemySpawnTime);
     }
     enemySpawnTimeout: any;

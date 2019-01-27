@@ -7,11 +7,10 @@ const webpack = require('webpack');
 
 /** @type {webpack.Configuration} */
 module.exports =  {
-    mode: 'development',
     entry: './src/index.ts',
     output: {
-        filename: 'bundle.js',
-        path: path.resolve('./dist')
+        filename: 'build/bundle.js',
+        path: path.resolve(__dirname)
     },
     devtool: "eval-source-map",
     module: {
