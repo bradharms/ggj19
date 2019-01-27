@@ -15,6 +15,10 @@ export default class Trojan extends AbstractGameObject {
 
     constructor(app: App, position?: Vector3) {
         super('Trojan', app, position);
+        if (app.gameObjectsByType.Trojan.length >= 20) {
+            this.destroy(true);
+            return;
+        }
         const angle = Vector3.Normalize(position);
         this.mesh.rotation.y =
             Math.atan2(angle.x, angle.z)
