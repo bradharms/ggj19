@@ -46,14 +46,16 @@ export default class House extends AbstractGameObject {
     }
 
     onHit(value: number) {
-        this.app.sounds.EnemyDestroy2.setPosition(this.mesh.position);
-        this.app.sounds.EnemyDestroy2.play();
+        if (this.app) {
+            this.app.sounds.EnemyDestroy2.setPosition(this.mesh.position);
+            this.app.sounds.EnemyDestroy2.play();
+        }
         super.onHit(value);
     }
 
     destroy(isCancel = false) {
         if (!isCancel) {
-            this.app.gameOver();
+            this.app && this.app.gameOver();
         }
         super.destroy(isCancel);
     }

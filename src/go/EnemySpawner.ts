@@ -30,11 +30,12 @@ export default class EnemySpawner extends GameObject {
     enemies: Trojan[] = [];
 
     spawn = () => {
+        if (!this.app) return;
         if (this.leftToSpawn <= 0) {
             return;
         }
         this.leftToSpawn--;
-        console.log('Left to spawn', this.leftToSpawn);
+
         const angle = Math.random() * Math.PI * 2;
         const x = Math.cos(angle) * C.NETFIELD_DIAMETER_BOTTOM / 2;
         const z = Math.sin(angle) * C.NETFIELD_DIAMETER_BOTTOM / 2;
@@ -43,7 +44,7 @@ export default class EnemySpawner extends GameObject {
         this.enemies.push(t);
         const oldDestory = t.destroy.bind(t);
         t.destroy = (isCancel = false) => {
-            console.log('destroyed');
+
             oldDestory(isCancel);
             this.enemies = this.enemies.filter(t2 => t2 !== t);
             if (this.leftToSpawn <= 0 && this.enemies.length <= 0) {

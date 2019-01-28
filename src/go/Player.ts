@@ -81,7 +81,7 @@ export default class Player extends GameObject {
     }
 
     destroy(isCancel = false) {
-        if (!this.app) {
+        if (this.app) {
             this.app.canvas.removeEventListener('click', this.onMouseDown);
             window.removeEventListener('mousemove', this.onMouseMove);
         }

@@ -54,6 +54,9 @@ export default class TurretBullet extends GameObject {
 
     update() {
         super.update();
+        if (!this.app) {
+            return;
+        }
         const enemies = this.app.gameObjectsByType.Trojan || [];
         for (const enemy of enemies) {
             if (!enemy.mesh) {

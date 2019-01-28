@@ -42,8 +42,4 @@ export default class NetField extends AbstractGameObject {
         );
         return impostor;
     }
-
-    update() {
-
-    }
 }

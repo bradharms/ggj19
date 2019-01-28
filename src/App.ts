@@ -59,7 +59,7 @@ export default class App {
         this.enemiesKilledDisplay.rotation.y = Math.PI / 2;
     }
 
-    protected _waveNumber = 0;
+    protected _waveNumber = -1;
     get waveNumber() {
         return this._waveNumber;
     }
@@ -109,7 +109,7 @@ export default class App {
 
     constructor() {
         window.addEventListener('load', this.onWindowLoad);
-        window.addEventListener('resize', this.onWindowResize);
+
     }
 
     onWindowLoad = () => {
@@ -117,7 +117,7 @@ export default class App {
         this.setupMaterials();
         this.setupSound()
         this.reset();
-
+        window.addEventListener('resize', this.onWindowResize);
         this.engine.runRenderLoop(this.update);
     }
 
@@ -240,10 +240,10 @@ export default class App {
             this.enemySpawnTime,
             this.enemySpeed,
             () => {
-                console.log('onSpawn');
+
             },
             () => {
-                console.log('onAllDestroyed');
+
                 this.nextWave();
                 this.cycleColors();
             }

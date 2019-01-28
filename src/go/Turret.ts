@@ -34,7 +34,7 @@ export default class Turret extends GameObject {
             this.app.scene
         );
         mesh.position.y = C.TURRET_H / 2;
-        mesh.material = this.app.scene.materials[2];
+        mesh.material = this.app.mats[2];
         return mesh;
     }
 
@@ -73,6 +73,7 @@ export default class Turret extends GameObject {
     }
 
     findNearestEnemy() {
+        if (!this.app) return null;
         let shortestDist = 10000000000;
         let enemy: GameObject = null;
         const Trojans = this.app.gameObjectsByType.Trojan || [];

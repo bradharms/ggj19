@@ -74,14 +74,16 @@ export default class Trojan extends AbstractGameObject {
     }
 
     onHit(value: number) {
-        this.app.sounds.CannonFire3.setPosition(this.mesh.position);
-        this.app.sounds.CannonFire3.setPlaybackRate(1.5 + (Math.random() * 0.05))
-        this.app.sounds.CannonFire3.play();
+        if (this.app) {
+            this.app.sounds.CannonFire3.setPosition(this.mesh.position);
+            this.app.sounds.CannonFire3.setPlaybackRate(1.5 + (Math.random() * 0.05))
+            this.app.sounds.CannonFire3.play();
+        }
         super.onHit(value);
     }
 
     destroy(isCancel = false) {
-        if (!isCancel) {
+        if (!isCancel && this.app) {
             this.app.score += C.TROJAN_SCORE;
             this.app.sounds.EnemyDestroy.setPosition(this.mesh.position);
             this.app.sounds.EnemyDestroy.play();
