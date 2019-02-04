@@ -1,5 +1,5 @@
 import App from 'App';
-import { MeshBuilder, Mesh, Vector3, StandardMaterial, Color3, PhysicsImpostor } from 'babylonjs';
+import { MeshBuilder, PhysicsImpostor } from 'babylonjs';
 import AbstractGameObject from 'go/GameObject';
 import * as C from 'C';
 
@@ -53,11 +53,9 @@ export default class House extends AbstractGameObject {
         super.onHit(value);
     }
 
-    destroy(isCancel = false) {
-        if (!isCancel) {
-            this.app && this.app.gameOver();
-        }
-        super.destroy(isCancel);
+    onKill() {
+        super.onKill();
+        this.app.gameOver();
     }
 }
 

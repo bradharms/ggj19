@@ -49,7 +49,7 @@ export default class TurretBullet extends GameObject {
     }
 
     onTimeout = () => {
-        this.destroy();
+        this.kill();
     }
 
     update() {
@@ -65,7 +65,7 @@ export default class TurretBullet extends GameObject {
             if (enemy.mesh.intersectsMesh(this.mesh)) {
                 enemy.hit(this.damageValue);
                 this.turret.hit(1);
-                this.destroy();
+                this.kill();
                 return;
             }
         }

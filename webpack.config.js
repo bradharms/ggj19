@@ -31,6 +31,7 @@ module.exports =  {
         extensions: ['.js', '.ts']
     },
     devServer: {
+        port: 8082,
         contentBase: '.',
         hot: true,
     },

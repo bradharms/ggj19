@@ -13,6 +13,8 @@ export default abstract class GameObject {
     intervals: any[] = [];
     health = 1;
     vulnerable = true;
+    isKilled = false;
+    isDestroyed = false;
 
     constructor(public typeName: string, public app: App, position?: Vector3) {
         this.idn = count++;
@@ -51,10 +53,9 @@ export default abstract class GameObject {
             y > K ||
             y < -K ||
             z > K ||
-            z < -K ||
-            this.health <= 0
+            z < -K
         ) {
-            this.destroy();
+            this.kill();
         }
     };
 
@@ -83,14 +84,14 @@ export default abstract class GameObject {
         }
         this.onHit(value);
         this.vulnerable = false;
-        this.setTimeout(this.onHitReset, 100);
+        this.setTimeout(this.onHitReset, 10);
         return true;
     }
 
     onHit(value: number) {
         this.health -= value;
         if (this.health <= 0) {
-            this.destroy();
+            this.kill();
         }
     }
 
@@ -98,24 +99,33 @@ export default abstract class GameObject {
         this.vulnerable = true;
     }
 
-    destroy(isCanel = false) {
-        if (this.app) {
-            this.app.gameObjects =
-                this.app.gameObjects.filter(o => o !== this);
-            this.app.gameObjectsByType[this.typeName] =
-                this.app.gameObjectsByType[this.typeName]
-                    .filter(o => o !== this);
-        }
-        if (this.mesh) {
-            this.app.scene.removeMesh(this.mesh);
-            this.mesh.dispose();
-            this.mesh = null;
-        }
-        if (this.impostor) {
-            this.app.physics.removePhysicsBody(this.impostor);
-            this.impostor.dispose();
-            this.impostor = null;
-        }
+    kill() {
+        if (this.isKilled) return;
+        this.isKilled = true;
+        this.onKill();
+    }
+
+    onKill() {
+
+    }
+
+    destroy() {
+        this.isKilled = true;
+        if (this.isDestroyed) return;
+        this.isDestroyed = true;
+        this.onDestroy();
+    }
+
+    onDestroy() {
+        this.app.gameObjects =
+            this.app.gameObjects.filter(o => o !== this);
+        this.app.gameObjectsByType[this.typeName] =
+            this.app.gameObjectsByType[this.typeName]
+                .filter(o => o !== this);
+        this.app.scene.removeMesh(this.mesh);
+        this.mesh.dispose();
+        this.app.physics.removePhysicsBody(this.impostor);
+        this.impostor.dispose();
         for (const tm of this.timeouts) {
             clearTimeout(tm);
         }
@@ -124,7 +134,6 @@ export default abstract class GameObject {
             clearInterval(iv);
         }
         this.intervals = [];
-        this.app = null;
     }
 }
 

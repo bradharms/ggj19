@@ -25,11 +25,10 @@ export default class Player extends GameObject {
     }
 
     onMouseDown = (e: MouseEvent) => {
-        // @ts-ignore
         if (!document.pointerLockElement) {
-            if (this.app) {
-                this.app.canvas.requestPointerLock();
-            }
+            if (!this.app) return;
+            this.app.canvas.requestFullscreen()
+            this.app.canvas.requestPointerLock();
             return;
         }
         this.placeTurret();
@@ -79,12 +78,10 @@ export default class Player extends GameObject {
         const {boundingBox: bbox} = house.mesh.getBoundingInfo();
         this.app.camera.position.y = (bbox.maximumWorld.y + PLAYER_HEIGHT);
     }
-
-    destroy(isCancel = false) {
-        if (this.app) {
-            this.app.canvas.removeEventListener('click', this.onMouseDown);
-            window.removeEventListener('mousemove', this.onMouseMove);
-        }
-        super.destroy(isCancel);
+    
+    onDestroy() {
+        super.onDestroy();
+        this.app.canvas.removeEventListener('click', this.onMouseDown);
+        window.removeEventListener('mousemove', this.onMouseMove);
     }
 }

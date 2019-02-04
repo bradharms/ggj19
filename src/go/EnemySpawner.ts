@@ -8,16 +8,18 @@ export default class EnemySpawner extends GameObject {
 
     interval: any;
 
+    enemiesKilled = 0;
+    initialEnemyCount = 0;
+
     constructor(
         app: App,
         public leftToSpawn: number,
         public initialDelay: number,
         public spawnRate: number,
-        public enemySpeed: number,
-        public onSpawn: () => void = null,
-        public onAllDestroyed: () => void = null,
+        public enemySpeed: number
     ) {
         super('EnemySpawner', app);
+        this.initialEnemyCount = leftToSpawn;
         this.setTimeout(this.initialSpawn, initialDelay);
         this.app.sounds.ProbePing.play();
     }
@@ -35,27 +37,33 @@ export default class EnemySpawner extends GameObject {
             return;
         }
         this.leftToSpawn--;
-
         const angle = Math.random() * Math.PI * 2;
         const x = Math.cos(angle) * C.NETFIELD_DIAMETER_BOTTOM / 2;
         const z = Math.sin(angle) * C.NETFIELD_DIAMETER_BOTTOM / 2;
         const v3 = new Vector3(x, C.TROJAN_H / 2, z);
-        const t = new Trojan(this.app, v3);
-        this.enemies.push(t);
-        const oldDestory = t.destroy.bind(t);
-        t.destroy = (isCancel = false) => {
-
-            oldDestory(isCancel);
-            this.enemies = this.enemies.filter(t2 => t2 !== t);
-            if (this.leftToSpawn <= 0 && this.enemies.length <= 0) {
-                this.onAllDestroyed && this.onAllDestroyed();
-            }
-        }
-        this.onSpawn && this.onSpawn();
+        this.enemies.push(new SpawnerTrojan(this, v3));
     }
+    
+    onKill() {
+        this.enemies.forEach(e => e.kill());
+        super.onKill();
+    }
+    
+    onEnemyKilled(enemy: SpawnerTrojan) {
+        this.enemiesKilled ++;
+        this.enemies = this.enemies.filter(t2 => t2 !== enemy);
+        if (this.leftToSpawn <= 0 && this.enemiesKilled >= this.initialEnemyCount) {
+            this.kill();
+        }
+    }
+}
 
-    destroy(isCancel = false) {
-        this.enemies.forEach(e => e.destroy(isCancel));
-        super.destroy(isCancel);
+class SpawnerTrojan extends Trojan {
+    constructor(public spawner: EnemySpawner, position: Vector3) {
+        super(spawner.app, position);
+    }
+    onKill() {
+        super.onKill();
+        this.spawner.onEnemyKilled(this);
     }
 }

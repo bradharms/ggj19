@@ -219,12 +219,12 @@ export default class App {
     reset = () => {
         this.setupMaterials();
         for (const obj of this.gameObjects) {
-            obj.destroy(true);
+            obj.kill(true);
         }
         this.enemySpawnTime = C.INITIAL_ENEMY_SPAWN_TIME;
         this.score = C.INITIAL_SCORE;
         this.enemiesKilled = 0;
-        this.waveNumber = 1;
+        this.waveNumber = 0;
         this.enemySpeed = C.TROJAN_INITIAL_SPEED;
         new Player(this);
         new NetField(this);
@@ -233,23 +233,9 @@ export default class App {
     }
 
     nextWave() {
-        new EnemySpawner(
-            this,
-            15 + (this.waveNumber * 2),
-            4000,
-            this.enemySpawnTime,
-            this.enemySpeed,
-            () => {
-
-            },
-            () => {
-
-                this.nextWave();
-                this.cycleColors();
-            }
-        );
+        new AppEnemySpawner(this);
         this.waveNumber++;
-        this.enemySpawnTime = Math.max(this.enemySpawnTime - 200, 1);
+        this.enemySpawnTime = Math.max(this.enemySpawnTime - 50, 1);
         this.enemySpeed *= 1.05;
     }
 
@@ -268,8 +254,19 @@ export default class App {
     }
 
     update = () => {
-        for (let go of this.gameObjects) {
+        const killed: GameObject[] = [];
+        const alive: GameObject[] = [];
+        for (const go of this.gameObjects) {
+            if (go.isKilled) {
+                killed.push(go)
+            } else {
+                alive.push(go);
+            }
             go.update();
+        }
+        this.gameObjects = alive;
+        for (const go of killed) {
+            go.destroy();
         }
 
         this.scene.render();
@@ -285,12 +282,12 @@ export default class App {
 
     destroyAllByType(type: string, isCancel = false) {
         this.getAllByType(type).forEach(o => {
-            o.destroy(isCancel);
+            o.kill(isCancel);
         });
     }
 
     gameOver() {
-        this.sounds.EnemyDestroy2.setPosition(new Vector3(0,0,0));
+        this.sounds.EnemyDestroy2.setPosition(Vector3.Zero());
         this.sounds.EnemyDestroy2.play();
         this.destroyAllByType('Turret');
         this.destroyAllByType('Trojan', true);
@@ -298,5 +295,28 @@ export default class App {
         setTimeout( () => {
             this.reset();
         }, 5000);
+    }
+}
+
+class AppEnemySpawner extends EnemySpawner {
+    constructor(app: App) {
+        super(
+            app,
+            15 + (app.waveNumber * 2),
+            4000,
+            app.enemySpawnTime,
+            app.enemySpeed
+        );
+    }
+
+    kill(isCancel = false) {
+        super.kill(isCancel);
+        if (!isCancel) {
+            this.app.nextWave();
+            this.app.cycleColors();
+            console.log('non-cancel destroy')
+        } else {
+            console.log('cancel destroy')
+        }   
     }
 }

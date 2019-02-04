@@ -16,7 +16,7 @@ export default class Trojan extends AbstractGameObject {
     constructor(app: App, position?: Vector3) {
         super('Trojan', app, position);
         if (app.gameObjectsByType.Trojan.length >= 10) {
-            this.destroy(true);
+            this.kill(true);
             return;
         }
         const angle = Vector3.Normalize(position);
@@ -35,7 +35,8 @@ export default class Trojan extends AbstractGameObject {
             }
         );
         this.sound.attachToMesh(this.mesh);
-        // this.sound.play();
+
+        // this.setTimeout(this.destroy.bind(this), 10);
     }
 
     setupImpostor() {
@@ -82,42 +83,35 @@ export default class Trojan extends AbstractGameObject {
         super.onHit(value);
     }
 
-    destroy(isCancel = false) {
-        if (!isCancel && this.app) {
-            this.app.score += C.TROJAN_SCORE;
-            this.app.sounds.EnemyDestroy.setPosition(this.mesh.position);
-            this.app.sounds.EnemyDestroy.play();
-            this.app.enemySpawnTime -= 20;
-            if (this.app.enemySpawnTime <= 0) {
-                this.app.enemySpawnTime = 1;
-            }
-            this.app.enemiesKilled ++;
+    onKill() {
+        super.onKill();
+        this.app.score += C.TROJAN_SCORE;
+        this.app.sounds.EnemyDestroy.setPosition(this.mesh.position);
+        this.app.sounds.EnemyDestroy.play();
+        this.app.enemySpawnTime -= 20;
+        if (this.app.enemySpawnTime <= 0) {
+            this.app.enemySpawnTime = 1;
         }
-        if (this.sound) {
-            this.sound.dispose();
-            this.sound = null;
-        }
-        super.destroy(isCancel);
+        this.app.enemiesKilled ++;
+    }
+
+    onDestroy() {
+        super.onDestroy()
+        this.sound.dispose();
     }
 
     update() {
         super.update();
-        if (!this.app) {
-            return;
-        }
         const turrets = this.app.gameObjectsByType.Turret || [];
         for (const turret of turrets) {
-            if (!turret.mesh) {
+            if (turret.isKilled) {
                 continue;
             }
             if (this.mesh.intersectsMesh(turret.mesh)) {
-                this.destroy();
-                turret.destroy();
+                this.kill();
+                turret.kill();
                 break;
             }
-        }
-        if (!this.app) {
-            return
         }
         const houses = this.app.gameObjectsByType.House || [];
         for (const house of houses) {
@@ -126,7 +120,7 @@ export default class Trojan extends AbstractGameObject {
             }
             if (this.mesh.intersectsMesh(house.mesh)) {
                 house.hit(C.TROJAN_PENALTY);
-                this.destroy(true);
+                this.destroy();
                 break;
             }
         }
